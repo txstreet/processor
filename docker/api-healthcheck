@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eo pipefail
+
+result=`wget -q -O- http://localhost:${API_PORT}/healthcheck`
+echo result=$result
+
+[[ "$result" == "OK" ]]
