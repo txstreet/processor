@@ -4,8 +4,18 @@ import { providers } from "ethers";
 
 function getQuickNodeEndpoint(chain: string) {
     // const provider = new Web3.providers.WebsocketProvider(process.env['QUICKNODE_' + chain]);
-    let provider = new providers.JsonRpcProvider({ url: process.env['QUICKNODE_' + chain], headers: { "x-qn-api-version": 1 } });
-    return provider;
+    const envKey = 'QUICKNODE_' + chain;
+    const url = process.env[envKey];
+
+    if (!url) {
+      console.error(`${envKey} not configured`);
+      return;
+    }
+
+    return new providers.JsonRpcProvider({
+      url,
+      headers: { "x-qn-api-version": 1 },
+    });
 }
 
 class tokenManager {
@@ -37,7 +47,10 @@ class tokenManager {
     }
 
     async quickNodeFetch(contract: string) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        if (!this.quicknode) {
+          return {};
+        }
+
         const result = await this.quicknode.send("qn_getTokenMetadataByContractAddress", {
             //@ts-ignore
             contract
