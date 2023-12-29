@@ -36,10 +36,11 @@ REDIS_URI=rediss://
 
 MONGODB_DATABASE=txstreet
 USE_DATABASE=true
-USE_BULK_API=true
+ETH_BULK_URL=http://bulk-geth-api:8080
 
 #Optional quicknode api endpoint
 QUICKNODE_ETH=
+QUICKNODE_ARBI=
 
 #Replace 0.0.0.0 with the private IP from each blockchain node
 ETH_NODE=ws://0.0.0.0:8546
