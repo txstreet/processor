@@ -1,5 +1,6 @@
 import { BlockchainWrapper } from '../../lib/node-wrappers';
 import redis from '../../databases/redis';
+import config from '../../lib/utilities/config';
 import axios from 'axios';
 
 let globalWrapper: BlockchainWrapper = null;
@@ -10,7 +11,7 @@ function setAccountValue(accountValues: any, account: string, value: number) {
     redis.setAsync(key, value, 'EX', 3600);
 }
 
-export default async (wrapper: BlockchainWrapper, transactions: any[], returnSingle = false, bypassCache = false, bulkApi = Boolean(process.env.USE_BULK_API)): Promise<any> => {
+export default async (wrapper: BlockchainWrapper, transactions: any[], returnSingle = false, bypassCache = false, useBulkApi = true): Promise<any> => {
     globalWrapper = wrapper;
     let calls = 0;
     let cachedCount = 0;
@@ -41,9 +42,12 @@ export default async (wrapper: BlockchainWrapper, transactions: any[], returnSin
         });
         await Promise.all(cachedTasks);
 
-        if (bulkApi) {
-            const url = new URL(process.env.ETH_NODE);
-            let response = await axios.post(`http://${url.hostname}/nonces`, { accounts: Object.keys(accounts) });
+        if (useBulkApi) {
+            let response =
+              await axios.post(`${config.ethBulkUrl}/nonces`, {
+                accounts: Object.keys(accounts)
+              });
+
             response.data.forEach((result: any) => {
                 setAccountValue(accountValues, result.account, result.count);
             });

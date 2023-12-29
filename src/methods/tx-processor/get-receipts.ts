@@ -1,13 +1,13 @@
 import { BlockchainWrapper } from '../../lib/node-wrappers';
+import config from '../../lib/utilities/config';
 import axios from 'axios';
 
-export default async (wrapper: BlockchainWrapper, transactions: any[], returnSingle = false, bulkApi = Boolean(process.env.USE_BULK_API)): Promise<any> => {
+export default async (wrapper: BlockchainWrapper, transactions: any[], returnSingle = false, useBulkApi = true): Promise<any> => {
     try {
-        let hashes: string[] = transactions.map((request: any) => request.hash);
+        if (useBulkApi) {
+            const hashes: string[] = transactions.map((request: any) => request.hash);
+            const response = await axios.post(`${config.ethBulkUrl}/transaction-receipts`, { hashes });
 
-        if (bulkApi) {
-            const url = new URL(process.env.ETH_NODE);
-            let response = await axios.post(`http://${url.hostname}/transaction-receipts`, { hashes });
             response.data.forEach((result: any) => {
                 for (let i = 0; i < transactions.length; i++) {
                     const transaction = transactions[i];
