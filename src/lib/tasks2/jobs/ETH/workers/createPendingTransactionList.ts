@@ -10,6 +10,7 @@ import { ProjectedEthereumTransaction } from '../../../types';
 import axios from 'axios';
 import updateAccountNonces from '../../../../../methods/tx-processor/update-account-nonces';
 import * as Wrappers from '../../../../../lib/node-wrappers';
+import config from '../../../../utilities/config';
 
 const ethWrapper = new Wrappers.ETHWrapper(process.env.ETH_NODE as string);
 
@@ -32,7 +33,7 @@ let lastUploadTime = 0;
 // The purpose of this function is to curate and store the JSON information for the current pending transaction list. 
 setInterval(async () => {
     try {
-        const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'ETH-pendingTransactions.bin');
+        const dataPath = path.join(config.dataDir, 'ETH-pendingTransactions.bin');
         const { database } = await mongodb();
 
         let data = await readFile(dataPath);
@@ -173,7 +174,7 @@ setInterval(async () => {
         const content = JSON.stringify(pendingList);
 
         if (Date.now() - lastUploadTime >= 1990) {
-            const _path = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'ETH-pendingTransactions.json');
+            const _path = path.join(config.dataDir, 'ETH-pendingTransactions.json');
             const writingFilePath = _path.replace(/\.json$/, '-writing.json');
             fs.writeFileSync(writingFilePath, content);
             fs.rename(writingFilePath, _path, (err) => {

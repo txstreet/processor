@@ -7,6 +7,7 @@ import path from 'path';
 import fs from 'fs';
 import OverlapProtectedInterval, { setInterval } from '../utils/OverlapProtectedInterval';
 import { BTCTransactionsSchema } from '../../../data/schemas';
+import config from '../../utilities/config';
 
 export default class BCHPendingList {
     // The maximum allowed size of the collection. 
@@ -33,7 +34,7 @@ export default class BCHPendingList {
         this._onDroppedTransactions = this._onDroppedTransactions.bind(this);
         this._onPendingTransactions = this._onPendingTransactions.bind(this);
 
-        this._filePath = path.join(__dirname, '..', '..', '..', 'data', 'BCH-pendingTransactions.bin');
+        this._filePath = path.join(config.dataDir, 'BCH-pendingTransactions.bin');
         // Whenever a new transaction is broadcast.
         redis.subscribe('pendingTx');
 

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import config from '../../../utilities/config';
 
 var baseFee = 0; 
 var currentHeight = 0; 
@@ -15,7 +16,7 @@ let ignoreFeesFromHashes: any = {}; //for txs fitted into end of blocks, ignore 
  * but it can be updated to simulate future projections based on gas throughput
  */
 async function go() {
-  const _path = path.join(__dirname, '..', '..', '..', '..', 'data', 'ETH-pendingTransactions.json');
+  const _path = path.join(config.dataDir, 'ETH-pendingTransactions.json');
   const _result = fs.readFileSync(_path).toString('utf-8'); 
   const result = JSON.parse(_result);
   // const list: any = [...result];

@@ -7,6 +7,7 @@ import path from 'path';
 import fs from 'fs';
 import OverlapProtectedInterval, { setInterval } from '../utils/OverlapProtectedInterval';
 import { XMRTransactionsSchema } from '../../../data/schemas';
+import config from '../../utilities/config';
 
 export default class XMRPendingList {
     // The maximum allowed size of the collection. 
@@ -33,7 +34,7 @@ export default class XMRPendingList {
         this._onDroppedTransactions = this._onDroppedTransactions.bind(this);
         this._onPendingTransactions = this._onPendingTransactions.bind(this);
 
-        this._filePath = path.join(__dirname, '..', '..', '..', 'data', 'XMR-pendingTransactions.bin');
+        this._filePath = path.join(config.dataDir, 'XMR-pendingTransactions.bin');
         // Whenever a new transaction is broadcast.
         redis.subscribe('pendingTx');
 

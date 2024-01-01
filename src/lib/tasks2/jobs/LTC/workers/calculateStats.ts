@@ -17,6 +17,8 @@ import blockHeight from '../../common/blockHeight';
 import medianFeeLitPerByte from '../medianFee-litPerByte';
 import medianFeeUsd from '../medianFee-usd';
 
+import config from '../../../../utilities/config';
+
 // The last value(s) calculated during the execution of this task. 
 let lastExecutionResults = {
     'tps': 0,
@@ -57,7 +59,7 @@ setInterval(async () => {
         
         // Create the task to load the BTC transactions collection from disk. 
         initTasks.push(new Promise((resolve, reject) => {
-            const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'transactions-LTC.bin'); 
+            const dataPath = path.join(config.dataDir, 'transactions-LTC.bin'); 
             fs.readFile(dataPath, (err: NodeJS.ErrnoException, data: Buffer) => {
                 if(err) return reject(err); 
 
@@ -88,7 +90,7 @@ setInterval(async () => {
         
         // Create the task to load the BTC blocks collection from disk.
         initTasks.push(new Promise((resolve, reject) => {
-            const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'blocks-LTC.bin'); 
+            const dataPath = path.join(config.dataDir, 'blocks-LTC.bin'); 
             fs.readFile(dataPath,  (err: NodeJS.ErrnoException, data: Buffer) => {
                 if(err) return reject(err); 
 

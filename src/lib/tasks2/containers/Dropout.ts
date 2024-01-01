@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import avro from 'avsc';
 import OverlapProtectedInterval, { setInterval } from '../utils/OverlapProtectedInterval';
+import config from '../../utilities/config';
 
 /**
  * The purpose of this collection is to contain a containerized array that automatically drops objects
@@ -50,7 +51,7 @@ export default class TimeoutCollection<T> extends EventEmitter3 {
      */
     constructor(filename: string, schema: avro.Type, key: string, duration: number, timestampField?: string | null, timestampFieldInMilliseconds?: boolean, minimumCapacity?: number | null) {
         super(); 
-        this._filePath = path.join(__dirname, '..', '..', '..', 'data', filename);
+        this._filePath = path.join(config.dataDir, filename);
         this._key = key; 
         this._schema = schema;
         this._duration = duration;

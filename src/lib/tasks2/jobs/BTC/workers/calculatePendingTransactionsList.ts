@@ -6,6 +6,7 @@ import path from 'path';
 import { BTCTransactionsSchema } from "../../../../../data/schemas";
 import { ProjectedBTCTransaction } from "../../../types";
 import fs from 'fs';
+import config from '../../../../utilities/config';
 
 const cache: any = {}; 
 
@@ -27,7 +28,7 @@ const interval = setInterval(async () => {
     try {
         const { database } = await mongodb();
         const collection = database.collection(`transactions_BTC`);
-        const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'BTC-pendingTransactions.bin'); 
+        const dataPath = path.join(config.dataDir, 'BTC-pendingTransactions.bin'); 
         let data = await readFile(dataPath);
         let parsed = BTCTransactionsSchema.fromBuffer(data);
         let pTransactions = parsed.collection.sort((a: ProjectedBTCTransaction, b: ProjectedBTCTransaction) =>  b.fee - a.fee);

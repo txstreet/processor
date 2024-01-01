@@ -21,6 +21,7 @@ import baseFee from '../../ETH/baseFee';
 import gasTarget from '../../ETH/gasTarget';
 import gasLimit from '../../ETH/gasLimit';
 import medianGasUsed from '../../ETH/medianGasUsed';
+import config from '../../../../utilities/config';
 
 // The last value(s) calculated during the execution of this task. 
 let lastExecutionResults = {
@@ -78,7 +79,7 @@ const interval = setInterval(async () => {
         
         // Create the task to load the ethereum transactions collection from disk. 
         initTasks.push(new Promise((resolve, reject) => {
-            const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'transactions-ARBI.bin'); 
+            const dataPath = path.join(config.dataDir, 'transactions-ARBI.bin'); 
             fs.readFile(dataPath, (err: NodeJS.ErrnoException, data: Buffer) => {
                 if(err) return reject(err); 
 
@@ -109,7 +110,7 @@ const interval = setInterval(async () => {
         
         // Create the task to load the ethereum blocks collection from disk.
         initTasks.push(new Promise((resolve, reject) => {
-            const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'blocks-ARBI.bin'); 
+            const dataPath = path.join(config.dataDir, 'blocks-ARBI.bin'); 
             fs.readFile(dataPath,  (err: NodeJS.ErrnoException, data: Buffer) => {
                 if(err) return reject(err); 
 

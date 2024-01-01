@@ -5,6 +5,7 @@ import { ProjectedXMRBlock, ProjectedXMRTransaction } from "../../../types";
 import { setInterval } from "../../../utils/OverlapProtectedInterval";
 import mongodb from '../../../../../databases/mongodb';
 import redis from '../../../../../databases/redisEvents';
+import config from '../../../../utilities/config';
 
 import tps from '../../common/tps';
 import ctps from '../../common/ctps';
@@ -60,7 +61,7 @@ setInterval(async () => {
         
         // Create the task to load the ethereum transactions collection from disk. 
         initTasks.push(new Promise((resolve, reject) => {
-            const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'transactions-XMR.bin'); 
+            const dataPath = path.join(config.dataDir, 'transactions-XMR.bin'); 
             fs.readFile(dataPath, (err: NodeJS.ErrnoException, data: Buffer) => {
                 if(err) return reject(err); 
 
@@ -90,7 +91,7 @@ setInterval(async () => {
         
         // Create the task to load the ethereum blocks collection from disk.
         initTasks.push(new Promise((resolve, reject) => {
-            const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'blocks-XMR.bin'); 
+            const dataPath = path.join(config.dataDir, 'blocks-XMR.bin'); 
             fs.readFile(dataPath,  (err: NodeJS.ErrnoException, data: Buffer) => {
                 if(err) return reject(err); 
 

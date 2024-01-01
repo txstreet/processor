@@ -6,6 +6,7 @@ import path from 'path';
 import { BTCTransactionsSchema } from "../../../../../data/schemas";
 import { ProjectedBTCTransaction } from "../../../types";
 import fs from 'fs';
+import config from '../../../../utilities/config';
 
 const cache: any = {};
 
@@ -43,7 +44,7 @@ const interval = setInterval(async () => {
     try {
         const { database } = await mongodb();
         const collection = database.collection(`transactions_LTC`);
-        const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'LTC-pendingTransactions.bin'); 
+        const dataPath = path.join(config.dataDir, 'LTC-pendingTransactions.bin'); 
         let data = await readFile(dataPath);
         let parsed = BTCTransactionsSchema.fromBuffer(data);
         console.log("LTC PENDING " + parsed.collection.length);

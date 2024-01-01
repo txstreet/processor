@@ -6,6 +6,7 @@ import { setInterval } from '../../../utils/OverlapProtectedInterval';
 import fs from 'fs';
 import path from 'path';
 import { ETHTransactionsSchema } from '../../../../../data/schemas';
+import config from '../../../../utilities/config';
 
 const readFile = (path: string) => new Promise<Buffer>((resolve, reject) => {
     fs.readFile(path, { flag: 'rs' }, (err: NodeJS.ErrnoException, data: Buffer) => {
@@ -27,7 +28,7 @@ setInterval(async () => {
         const lastPostTx = lastPost[0];
         // console.log(lastPost, "lastPost");
 
-        const dataPath = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'transactions-ARBI.bin');
+        const dataPath = path.join(config.dataDir, 'transactions-ARBI.bin');
 
         let data = await readFile(dataPath);
         let parsed = ETHTransactionsSchema.fromBuffer(data);
@@ -44,12 +45,6 @@ setInterval(async () => {
 
 
         if (Date.now() - lastUploadTime >= 1990) {
-            // const _path = path.join(__dirname, '..', '..', '..', '..', '..', 'data', 'ARBI-pendingBatch.json');
-            // const writingFilePath = _path.replace(/\.json$/, '-writing.json');
-            // fs.writeFileSync(writingFilePath, content);
-            // fs.rename(writingFilePath, _path, (err) => {
-            //     if (err) throw err
-            // });
             lastUploadTime = Date.now();
             await storeObject(path.join('live', `pendingBatch-ARBI`), JSON.stringify(hashes));
         }
