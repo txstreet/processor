@@ -32,3 +32,5 @@ COPY --chown=node:node --from=builder /home/node/app/dist ./dist
 COPY --chown=node:node --from=builder /home/node/app/node_modules ./node_modules
 
 COPY --chown=root:root --chmod=0555 docker/api-healthcheck /docker-healthcheck
+
+ENV NODE_OPTIONS="--enable-source-maps"
