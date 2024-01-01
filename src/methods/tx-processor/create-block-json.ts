@@ -3,8 +3,6 @@ import { formatTransaction, formatBlock, storeObject } from '../../lib/utilities
 
 import fs from 'fs';
 import path from 'path';
-const dataDir = path.join(process.env.DATA_DIR as string || '/mnt/disks/txstreet_storage');        // Create the file. 
-
 
 // The purpose of this function is to curate and store the JSON information for this block.
 // This includes the task of querying for the txFull object and other information.

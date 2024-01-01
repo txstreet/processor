@@ -5,8 +5,6 @@ import { formatBlock, formatTransaction, storeObject } from '../../../../../lib/
 // import calculateBlockStats from './calculateBlockStats';
 import fs from 'fs';
 import path from 'path';
-const dataDir = path.join(process.env.DATA_DIR as string || '/mnt/disks/txstreet_storage');
-
 
 setInterval(async () => {
     try {
