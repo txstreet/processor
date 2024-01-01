@@ -1,6 +1,8 @@
 FROM txstreet-processor
 
-COPY --chown=root:root --chmod=0555 docker/healthcheck-api /docker-healthcheck
+COPY --chown=root:root --chmod=0555 \
+  docker/healthcheck-websocket \
+  /docker-healthcheck
 
 HEALTHCHECK \
   --interval=30s \
@@ -9,4 +11,4 @@ HEALTHCHECK \
   --start-period=40s \
   CMD /docker-healthcheck
 
-CMD ["node", "./dist/entry/api"]
+CMD ["node", "./dist/entry/websocket-server"]

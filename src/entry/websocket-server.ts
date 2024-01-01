@@ -129,7 +129,10 @@ const start = async () => {
         response.status(200).send("OK"); 
     });
 
-    server.listen(process.env.WEBSOCKET_PORT || 80, () => console.log('Server listening on port 80'));
+    console.log('Start listening');
+    server.listen(process.env.WEBSOCKET_PORT || 8081, (): any => {
+        return console.log(`Server listening on port: ${process.env.API_PORT}`);
+    });
     // if(process.env.SSL_ENABLED.toUpperCase() === "TRUE")
     //     server.listen(80, () => console.log('Server listening on port 443'));
 }
