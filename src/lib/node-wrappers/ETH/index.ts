@@ -54,6 +54,7 @@ export default class ETHWrapper extends BlockchainWrapper {
         this.web3.eth.subscribe('pendingTransactions', (error: any, result: any) => { }).on('data', async (hash: string) => {
             try {
                 const transaction = await this.getTransaction(hash, 2);
+                if (!transaction) return;
                 this.emit('mempool-tx', transaction);
             } catch (error) {
                 console.error(error);
