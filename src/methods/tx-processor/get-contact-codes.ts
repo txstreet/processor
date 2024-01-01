@@ -15,6 +15,10 @@ export default async (wrapper: BlockchainWrapper, transactions: any[], returnSin
 
         let cachedTasks: Promise<boolean>[] = [];
         transactions.forEach(async (transaction: any) => {
+            // `to` may be null in case of contract creations.
+            // Example: 0x1b114d01d520accc79e62ffd550c0e29d421130e43e44273cebf1456556ac38d
+            if (!transaction.to) return;
+
             cachedTasks.push(new Promise<boolean>(async (resolve) => {
                 try {
                     transaction.to = transaction.to.toLowerCase();
