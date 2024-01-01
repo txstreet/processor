@@ -13,12 +13,15 @@ class Opensea extends ChainImplementation {
   public nftList: any = {}; //TODO cache in db
 
   async fetchContract(address: string): Promise<any> {
+    const apiKey = process.env.OPENSEA_KEY;
+    if (!apiKey) return({});
+
     // console.log('test');
     if (this.nftList[address]) return this.nftList[address];
     const url = "https://api.opensea.io/api/v1/asset_contract/" + address;
     try {
       const response = await fetch(url, {
-        headers: { 'X-API-KEY': process.env.OPENSEA_KEY }
+        headers: { 'X-API-KEY': apiKey }
       });
       // const body = await response.text();
       // console.log(body);
