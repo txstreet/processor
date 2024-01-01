@@ -3,8 +3,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import mongodb from '../databases/mongodb';
-// import fs from 'fs';
-// import path from 'path';
 
 // Merge command line args into environment variables, overwriting values specified in .env
 import minimist from 'minimist';
@@ -98,22 +96,7 @@ const createIndexes = async (): Promise<boolean> => {
     }
 }
 
-// const createDirectories = async (): Promise<boolean> => {
-//     console.log("starting directories");
-//     const dataDir = path.join(process.env.DATA_DIR as string || '/mnt/disks/txstreet_storage');
-
-//     try { await fs.promises.mkdir(dataDir, { recursive: true }); } catch (e) { console.log(e) }
-//     try { await fs.promises.mkdir(path.join(dataDir, "live"), { recursive: true }); } catch (e) { console.log(e) }
-//     try { await fs.promises.mkdir(path.join(dataDir, "f", "houses"), { recursive: true }); } catch (e) { console.log(e) }
-//     try { await fs.promises.mkdir(path.join(dataDir, "f", "misc"), { recursive: true }); } catch (e) { console.log(e) }
-//     try { await fs.promises.mkdir(path.join(dataDir, "f", "wiki"), { recursive: true }); } catch (e) { console.log(e) }
-//     try { await fs.promises.mkdir(path.join(dataDir, "blocks"), { recursive: true }); } catch (e) { console.log(e) }
-//     console.log("end directories");
-//     return true;
-// }
-
 (async () => {
     await createIndexes();
-    // await createDirectories();
     process.exit(1);
 })();

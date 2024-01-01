@@ -82,11 +82,6 @@ nftRouter.post('/setCharacter', async (request: Request, response: Response) => 
             console.log(err);
             response.json({ success: false, code: 0, message: `Unknown error handling request.` });
         }
-
-        // const { database } = await mongodb();
-        // const collection = database.collection(`nft_owners`); 
-        // const results = await collection.find({address}).project({ _id: 0, tokenId: 1, collectionSlug: 1, collectionAddress: 1 }).toArray(); 
-        // return response.json({ success: true, nfts: results }); 
     } catch (error) {
         console.error(error);
         return response.json({ success: false, code: 0, message: `Unknown error handling request.` });

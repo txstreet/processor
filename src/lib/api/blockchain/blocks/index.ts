@@ -57,10 +57,7 @@ router.get('/:chain/:id', async (request: Request, response: Response) => {
 
     // If the block request already exists and has been processed, we simply process the request. 
     if(existingBlock && existingBlock.processed && existingBlock.lastTransactionFetch > Date.now() - 1209600000) {
-        const firstPart = existingBlock.hash[existingBlock.hash.length - 1];
-        const secondPart = existingBlock.hash[existingBlock.hash.length - 2]; 
-        const directory = process.env.DATA_DIR || path.join('/mnt', 'disks', 'txstreet_storage'); 
-        const filePath = path.join(directory, "blocks", chain, firstPart, secondPart, existingBlock.hash);
+        const filePath = path.join("blocks", chain, existingBlock.hash);
         const foundData = await readNFSFile(filePath);  
 
         if(!foundData) {

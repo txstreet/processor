@@ -46,11 +46,7 @@ export default async (chain: string, block: any): Promise<any> => {
         formattedBlock.note = 'transaction-processor'; 
         const fileContents = JSON.stringify(formattedBlock);
 
-        const firstPart = block.hash[block.hash.length - 1];
-        const secondPart = block.hash[block.hash.length - 2]; 
-        
-        // try { await fs.promises.mkdir(path.join(dataDir, 'blocks', chain, firstPart, secondPart), { recursive: true }); } catch (err) {}
-        await storeObject(path.join('blocks', chain, firstPart, secondPart, block.hash), fileContents);
+        await storeObject(path.join('blocks', chain, block.hash), fileContents);
         return block; 
     } catch (error) {
         console.error(error);

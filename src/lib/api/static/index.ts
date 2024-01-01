@@ -2,12 +2,8 @@ import express, { Request, Response, Router } from 'express';
 import path from 'path'; 
 import { readNFSFile } from '../../../lib/utilities';
 
-const directory = process.env.DATA_DIR || path.join('/mnt', 'disks', 'txstreet_storage'); 
-
 // Initialize router.
 const staticRouter = Router();
-
-staticRouter.use("/f/", express.static(path.join(directory, 'f')));
 
 const fileCache: { [key: string]: string } = {}; 
 const cacheExpire: { [key: string]: number } = {}; 
@@ -34,7 +30,7 @@ staticRouter.get('/live/:file', async (request: Request, response: Response) => 
                 console.log(`Live request served from memory cache.`);
                 return response.set('content-type', 'application/json').send(data); 
             }
-            const filePath = path.join(directory, 'live', file);
+            const filePath = path.join('live', file);
             data = await readNFSFile(filePath); 
 
             // Sanity
@@ -79,9 +75,7 @@ staticRouter.get('/blocks/:ticker/:hash', async (request: Request, response: Res
     }
 
     try {
-        const firstPart = hash[hash.length - 1];
-        const secondPart = hash[hash.length - 2]; 
-        const filePath = path.join(directory, 'blocks', ticker, firstPart, secondPart, hash);
+        const filePath = path.join('blocks', ticker, hash);
         const key: string = filePath + verbose;
 
         let data: any = fileCache[key];

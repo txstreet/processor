@@ -5,7 +5,6 @@ import { chainConfig } from "../../../../../data/chains";
 import fs from 'fs';
 import path from 'path';
 
-const dataDir = path.join(process.env.DATA_DIR as string || '/mnt/disks/txstreet_storage');
 const chain: string = workerData.chain;
 const keepMinBlocks = 300;
 
@@ -42,18 +41,6 @@ setInterval(async () => {
             else {
                 console.error("Failed to delete block " + block.hash);
             }
-
-            //delete block file from NFS
-            // if (!chainConfig[chain].storeBlockFile) continue;
-            // const firstPart = block.hash[block.hash.length - 1];
-            // const secondPart = block.hash[block.hash.length - 2];
-            // const filePath = path.join(dataDir, 'blocks', chain, firstPart, secondPart, block.hash);
-            // try {
-            //     fs.unlinkSync(filePath);
-            //     console.log(`Deleted file: ` + filePath);
-            // } catch (err) {
-            //     console.error(err);
-            // }
         }
     } catch (err) {
         console.error(err);

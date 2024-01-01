@@ -6,7 +6,6 @@ import { waitForTime, formatBlock } from '../../lib/utilities';
 import unlockRequest from './unlock-request';
 // import findBlockDatabase from './find-block-database';
 // import createTransactionRequests from './create-transaction-requests';
-// import createBlockFile from './create-block-file';
 import { formatTransaction } from '../../lib/utilities';
 import redis from '../../databases/redisEvents';
 import mongodb from "../../databases/mongodb";
@@ -174,11 +173,6 @@ const action = async (wrapper: BlockchainWrapper): Promise<void> => {
 
                 const { database } = await mongodb();
 
-                // delete block.transactionsFull;
-                // console.log("storing");
-                // await createBlockFile(wrapper.ticker, block);
-                // console.log("stored");
-                // await database.collection('blocks').updateOne({ chain: wrapper.ticker, hash: block.hash }, { $set: { stored: true } });
                 const formatted: any = formatBlock(wrapper.ticker, block);
 
                 console.log("broadcasting: " + block.height);

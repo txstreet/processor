@@ -160,10 +160,7 @@ export default class LTCPendingList {
             const obtainBlock = async (): Promise<any> => {
                 try {
                     if (attempts >= 5) return null;
-                    const directory = process.env.DATA_DIR || path.join('/mnt', 'disks', 'txstreet_storage');
-                    const firstPart = hash[hash.length - 1];
-                    const secondPart = hash[hash.length - 2];
-                    const filePath = path.join(directory, 'blocks', 'LTC', firstPart, secondPart, hash);
+                    const filePath = path.join('blocks', 'LTC', hash);
                     const data = await readNFSFile(filePath);
                     const block = JSON.parse(data as string);
                     if (block) return block;
