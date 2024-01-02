@@ -40,6 +40,8 @@ app.use('/static', staticRouter);
 
 // Begin listening.
 console.log('Start listening');
-app.listen(process.env.API_PORT || 8080, (): any => {
-    return console.log(`Server listening on port: ${process.env.API_PORT}`);
+
+const port = process.env.API_PORT || 8080;
+app.listen(port, (): any => {
+    return console.log(`Server listening on port: ${port}`);
 });
