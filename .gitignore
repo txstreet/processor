@@ -1,6 +1,6 @@
-node_modules
-.env
-dist
-yarn.lock
-deploy
-src/test/
+/.tool-versions
+/.env
+/node_modules
+/dist
+/_debug
+/_processor_api_env
