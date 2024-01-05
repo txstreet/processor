@@ -1,3 +1,9 @@
+/.tool-versions
+/.env
+/node_modules
+/dist
+/_debug
+/_processor_api_env
 /.git
 /_tools
 /Dockerfile*
