@@ -66,7 +66,7 @@ export default (chain: string, data: any) => {
         if (Object.keys(data.extras || {}).length > 0) obj.e = data.extras;
         if (data.house && data.house != "0" && data.house != "0.0") obj.h = data.house;
         if (data.fee && data.size)
-            obj[chain === "LTC" ? "lpb" : "spb"] = parseFloat(((data?.fees?.base || data.fee) / data.size).toFixed(2));
+            obj[chain === "LTC" ? "lpb" : "spb"] = parseFloat((data.fee / data.size).toFixed(2));
         obj.s = Number(data.size);
         obj.rs = Number(data.rsize);
         obj.tot = (data.total > 0 ? Number(data.total.toFixed(5)) : 0);

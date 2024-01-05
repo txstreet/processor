@@ -7,17 +7,17 @@ import RpcClient from 'bitcoind-rpc';
 import memcache from '../memcache';
 import { resolve } from "path/posix";
 
-export interface BTCRpcConfig {
+interface BTCRpcConfig {
     username: string,
     password: string,
     host: string,
     port?: number
-}
+};
 
-export interface BTCZmqConfig {
+interface BTCZmqConfig {
     host: string,
     port?: number
-}
+};
 
 export default class BTCWrapper extends BlockchainWrapper {
     public rpc: any;
@@ -109,7 +109,6 @@ export default class BTCWrapper extends BlockchainWrapper {
                     transaction.rsize = hex.length / 2;
                     transaction.size = bitcoinjsTx.virtualSize();
                     transaction.fee = false;
-                    transaction.fees = false;
 
                     this.emit('mempool-tx', transaction);
                     break;
@@ -204,22 +203,13 @@ export default class BTCWrapper extends BlockchainWrapper {
             });
         });
 
-        const getFees = async (id: string) => new Promise((resolve) => {
-            this.rpc.getMemPoolEntry(id, (error: string, resp: any) => {
-                if (error) return resolve({ fee: false, fees: false });
-                if (!resp) return resolve({ fee: false, fees: false });
-                return resolve({ fee: resp.result.fees.base * 100000000, fees: resp.result.fees });
-            });
-        });
-
         try {
             let transaction: any = await getRawTransaction();
             if (!transaction) return null;
 
             // The transaction is not confirmed (no blockhash) and has no fee data, so we need to obtain it.
             if (!transaction.blockhash && !transaction.fee) {
-                const fees: any = await getFees(transaction.hash);
-                transaction = { ...transaction, ...fees };
+                transaction.fee = await this.getFeeFromMemPool(transaction.hash);
             }
 
             return transaction;
@@ -344,18 +334,15 @@ export default class BTCWrapper extends BlockchainWrapper {
     }
 
     public async getPendingExtras(transaction: any): Promise<any> {
-        if (transaction.fee || transaction.fees)
-            return { fee: transaction.fee, fees: transaction.fees };
+        const extras = {
+          fee: transaction.fee,
+        };
 
-        const getFees = async (id: string) => new Promise((resolve) => {
-            this.rpc.getMemPoolEntry(id, (error: string, resp: any) => {
-                if (error) return resolve({ fee: false, fees: false });
-                if (!resp) return resolve({ fee: false, fees: false });
-                return resolve({ fee: resp.result.fees.base * 100000000, fees: resp.result.fees });
-            });
-        });
+        if (!extras.fee) {
+          extras.fee = await this.getFeeFromMemPool(transaction.hash);
+        }
 
-        return await getFees(transaction.hash);
+        return extras;
     }
 
     public isTransaction(data: any): boolean {
@@ -386,4 +373,21 @@ export default class BTCWrapper extends BlockchainWrapper {
         if (!blockchainInfo) return null;
         return Number(blockchainInfo?.blocks || 0)
     }
-}
+
+    private async getFeeFromMemPool(txId: string): Promise<number | boolean> {
+      return(new Promise((resolve) => {
+        this.rpc.getMemPoolEntry(txId, (error: string, resp: any) => {
+            if (error || !resp) return resolve(false);
+
+            resolve(calcTxFee(resp.result) || false);
+        });
+      }));
+    }
+};
+
+const calcTxFee = (txData: any): number | null => {
+  const feeSats = (txData.fee || txData.fees?.base);
+  if (!feeSats) return null;
+
+  return feeSats * 100000000;
+};
