@@ -126,10 +126,6 @@ const run = async () => {
         executeJob(() => ethRecentContracts('ETH',  '1hour', Date.now() - hours(1)), hours(1)); 
         executeJob(() => ethRecentContracts('ETH',  '1day', Date.now() - days(1)), days(1)); 
     }
-
-    setTimeout(() => {
-        process.exit(1); 
-    }, (1000 * 60) * 10)
 }
 
 run();
