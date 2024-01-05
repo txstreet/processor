@@ -272,6 +272,8 @@ export default class XMRPendingList {
                 this._dirtyFlag = false; 
                 if (err) throw err
             });
-        } catch (error) {}
+        } catch (error) {
+          console.error(error);
+        }
     }
 }

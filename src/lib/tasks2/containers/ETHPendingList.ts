@@ -292,6 +292,8 @@ export default class ETHPendingList {
                 this._dirtyFlag = false;
                 if (err) throw err
             });
-        } catch (error) { }
+        } catch (error) {
+          console.error(error);
+        }
     }
 }
