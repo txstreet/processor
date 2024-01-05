@@ -93,8 +93,3 @@ const initialize = async () => {
 
 // Initialize the script. 
 initialize();
-
-
-setTimeout(() => {
-    process.exit(1);
-}, (1000 * 60) * 10);
