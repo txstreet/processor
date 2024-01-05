@@ -88,7 +88,7 @@ setInterval(async () => {
             }); 
         }));
 
-        
+
         // Create the task to load the BTC blocks collection from disk.
         initTasks.push(new Promise((resolve, reject) => {
             const dataPath = path.join(config.dataDir, 'blocks-BTC.bin'); 

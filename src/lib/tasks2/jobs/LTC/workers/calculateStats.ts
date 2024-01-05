@@ -46,6 +46,7 @@ setInterval(async () => {
         let pricePerIncrement = 0; 
         let transactions: ProjectedBTCTransaction[] = [];
         let blocks: ProjectedBTCBlock[] = []; 
+        let last250Blocks: ProjectedBTCBlock[] = []; 
 
         // Create the task to obtain the current BTC price. 
         initTasks.push(new Promise((resolve, reject) => {
@@ -76,6 +77,7 @@ setInterval(async () => {
                     // Filter the collection to obtain the transactions within the specified range. 
                     transactions = parsed.collection.filter((transaction: ProjectedBTCTransaction) => transaction.insertedAt >= lowerRange && transaction.insertedAt <= upperRange);
                     transactions = transactions.sort((a: ProjectedBTCTransaction, b: ProjectedBTCTransaction) => a.insertedAt - b.insertedAt);
+                    console.log(`Found ${transactions.length} transactions in last 5 minutes.`);
                     return resolve();  
                 } catch (error) {
                     console.error(error);
@@ -86,8 +88,7 @@ setInterval(async () => {
             }); 
         }));
 
-        let lastTwoFiftyBlocks: any[] = []; 
-        
+
         // Create the task to load the BTC blocks collection from disk.
         initTasks.push(new Promise((resolve, reject) => {
             const dataPath = path.join(config.dataDir, 'blocks-LTC.bin'); 
@@ -104,13 +105,17 @@ setInterval(async () => {
                     const upperRange = now - oneSecond; 
                     const lowerRange = now - ((oneSecond * 60) * 60) - oneSecond;
 
-                    lastTwoFiftyBlocks = parsed.collection.sort((a: ProjectedBTCBlock, b: ProjectedBTCBlock) => a.height - b.height); 
-                    lastTwoFiftyBlocks = lastTwoFiftyBlocks.slice(0, 250); 
-
                     // Filter the collection to obtain the transactions within the specified range. 
+                    last250Blocks = parsed.collection.sort((a: ProjectedBTCBlock, b: ProjectedBTCBlock) => a.height - b.height).slice(0,250); 
                     blocks = parsed.collection.filter((block: ProjectedBTCBlock) => block.timestamp >= lowerRange && block.timestamp <= upperRange);
                     blocks = blocks.sort((a: ProjectedBTCBlock, b: ProjectedBTCBlock) => a.height - b.height); 
                     lastKnownBlock = blocks[blocks.length - 1]; 
+
+                    if(!lastKnownBlock || !blocks.length) {
+                        lastKnownBlock = parsed.collection.sort((a: ProjectedBTCBlock, b: ProjectedBTCBlock) => b.height - a.height)[0]; 
+                        blocks = [lastKnownBlock];
+                    }
+
                     return resolve();  
                 } catch (error) {
                     console.error(error);
@@ -129,7 +134,7 @@ setInterval(async () => {
         try { lastExecutionResults['ctps'] = await ctps(blocks); } catch (error) { console.error(error); };
         try { lastExecutionResults['bps'] = await bps(transactions); } catch (error) { console.error(error); };
         try { lastExecutionResults['medianBlockSize'] = await medianBlockSize(blocks); } catch (error) { console.error(error); };
-        try { lastExecutionResults['medianBlockTime'] = await medianBlockTime(lastTwoFiftyBlocks); } catch (error) { console.error(error); };
+        try { lastExecutionResults['medianBlockTime'] = await medianBlockTime(last250Blocks); } catch (error) { console.error(error); };
         try { lastExecutionResults['medianTxsPerBlock'] = await medianTxsPerBlock(blocks); } catch (error) { console.error(error); };
         try { lastExecutionResults['blockHeight'] = await blockHeight(lastKnownBlock); } catch (error) { console.error(error); };
         try { lastExecutionResults['difficulty'] = (await difficulty(lastKnownBlock)) as number; } catch (error) { console.error(error); };
