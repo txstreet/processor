@@ -26,15 +26,19 @@ export const enabledHooks: any = {
     "Memo",
     "SLP"
   ]
-}
+};
 
 export const initHooks = async (chain: string) => {
-  for (let i = 0; i < enabledHooks[chain].length; i++) {
-    const className = enabledHooks[chain][i];
-    const implClass = await import('./' + chain + '/' + className + '/index');
+  const hooks = enabledHooks[chain] || [];
+  
+  console.log(`${chain}: Initializing ${hooks.length} hooks`);
+
+  for (const className of hooks) {
+    const implClass = await import(`./${chain}/${className}/index`);
+
     await implClass.default.init();
   }
-}
+};
 
 export default async (chain: string, transaction: any) => {
   let tasks: Promise<boolean>[] = [];
@@ -46,11 +50,14 @@ export default async (chain: string, transaction: any) => {
         let executed = false;
         if (result) executed = await implementation.execute(transaction);
         if (result && transaction.blockHash && executed && (implementation as any).confirmed) await (implementation as any).confirmed(transaction);
+
         return resolve(true);
       } catch (error) {
+        console.error(error);
+
         return resolve(false);
       }
     }))
   })
   await Promise.all(tasks);
-}
+};
