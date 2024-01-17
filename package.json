@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@alch/alchemy-web3": "^1.4.2",
     "@txstreet/txstreet-token-ids": "^1.6.1",
     "abi-decoder": "^2.3.0",
     "avsc": "^5.7.3",

@@ -1,12 +1,9 @@
 import BlockchainWrapper from "../base";
-// import { createAlchemyWeb3, AlchemyWeb3 } from "@alch/alchemy-web3";
 import Web3 from 'web3'; 
 
 export default class ARBIWrapper extends BlockchainWrapper {
-    // public web3: AlchemyWeb3;
     public web3: Web3;
     public options: { [key: string]: any };
-    // public blockSubscription: 
 
     constructor() {
         super('ARBI');
@@ -33,40 +30,13 @@ export default class ARBIWrapper extends BlockchainWrapper {
 
     public initEventSystem() {
         this.web3.eth.subscribe("newBlockHeaders").on("data", async (data: any) => {
-            // if(data.hash){
-            // const block = await this.web3.eth.getBlock(data.hash, true);
             this.emit('confirmed-block', data.hash);
-            // console.log(block);
         });
-
-        // this.web3.eth.subscribe('pendingTransactions', (error: any, result: any) => {}).on('data', async (hash: string) => {
-        //     try {
-        //         const transaction = await this.getTransaction(hash, 2); 
-        //         this.emit('mempool-tx', transaction); 
-        //     } catch (error) {
-        //         console.error(error);
-        //     }
-        // }); 
-
-        // this.web3.eth.subscribe('newBlockHeaders', (error: any, result: any) => {}).on('data', (block: any) => {
-        //     this.emit('confirmed-block', block.hash); 
-        // });
     }
 
     public async getCurrentHeight(): Promise<null | number> {
         return await this.web3.eth.getBlockNumber();
     }
-
-    // public async getTransactionReceipts(block: any): Promise<any[]> {
-    //     try {
-    //         const receipts = await this.web3.alchemy.getTransactionReceipts(block);
-    //         if (!Array.isArray(receipts?.receipts)) return [];
-    //         return receipts.receipts;
-    //     } catch (error) {
-    //         console.error(error);
-    //         return [];
-    //     }
-    // }
 
     public async getTransactionReceipts(block: any): Promise<any[]> {
         try {
