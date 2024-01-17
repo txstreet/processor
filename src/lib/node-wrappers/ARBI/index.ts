@@ -29,28 +29,6 @@ export default class ARBIWrapper extends BlockchainWrapper {
 
         const provider = new Web3.providers.WebsocketProvider(process.env.QUICKNODE_ARBI, this.options); 
         this.web3 = new Web3(provider); 
-
-        // this.web3 = createAlchemyWeb3("wss://arb-mainnet.g.alchemy.com/v2/" + process.env.ALCHEMY_KEY);
-
-        // Add admin peers, nodeInfo, and removePeer functions. 
-        // this.web3.eth.extend({
-        //     property: 'admin',
-        //     methods: [
-        //         { name: 'peers', call: 'admin_peers' },
-        //         { name: 'nodeInfo', call: 'admin_nodeInfo' },
-        //         { name: 'removePeer', call: 'admin_removePeer', params: 1 }
-        //     ]
-        // });
-
-        // // Add txpoorl content, inspect, and status functions. 
-        // this.web3.eth.extend({
-        //     property: 'txpool', 
-        //     methods: [
-        //         { name: "content", call: "txpool_content" },
-        // 		{ name: "inspect", call: "txpool_inspect" },
-        // 		{ name: "status", call: "txpool_status" }
-        //     ]
-        // });
     }
 
     public initEventSystem() {
