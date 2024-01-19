@@ -9,10 +9,9 @@ import { ETHTransactionsSchema } from '../../../../../data/schemas';
 import { ProjectedEthereumTransaction } from '../../../types';
 import axios from 'axios';
 import updateAccountNonces from '../../../../../methods/tx-processor/update-account-nonces';
-import * as Wrappers from '../../../../../lib/node-wrappers';
 import config from '../../../../utilities/config';
 
-const ethWrapper = new Wrappers.ETHWrapper(process.env.ETH_NODE as string);
+const ethWrapper = config.initEthWrapper();
 
 const readFile = (path: string) => new Promise<Buffer>((resolve, reject) => {
     fs.readFile(path, (err: NodeJS.ErrnoException, data: Buffer) => {

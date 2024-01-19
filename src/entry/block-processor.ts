@@ -11,6 +11,7 @@ import processBlock from '../methods/block-processor/process-block';
 import processBlockTxs from '../methods/block-processor/process-block-txs'; 
 import * as Wrappers from '../lib/node-wrappers';
 import { initHooks } from '../lib/chain-implementations';
+import config from '../lib/utilities/config';
 
 
 // A collection of all initialized BlockchainNode instances. 
@@ -78,7 +79,7 @@ const run = async () => {
     }
 
     if(nodesToInit.includes('ETH')) {
-        const ethWrapper = new Wrappers.ETHWrapper(process.env.ETH_NODE as string);
+        const ethWrapper = config.initEthWrapper();
 
         nonBlockingInfiniteLoop(ethWrapper); 
     }

@@ -12,6 +12,7 @@ import processBlock from '../methods/node-subscriber/process-block';
 import mongodb from '../databases/mongodb';
 import * as Hooks from '../lib/chain-implementations';
 import redis from '../databases/redis';
+import config from '../lib/utilities/config';
 if (process.env.USE_DATABASE === "true")
     mongodb();
 
@@ -135,8 +136,7 @@ const init = async () => {
     }
 
     if (chainsToSubscribe.includes('ETH')) {
-        const wrapperClass = await import("../lib/node-wrappers/ETH");
-        let ethWrapper = new wrapperClass.default(process.env.ETH_NODE as string);
+        const ethWrapper = config.initEthWrapper();
 
         Hooks.initHooks('ETH');
 

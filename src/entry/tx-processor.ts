@@ -10,6 +10,7 @@ Object.assign(process.env, minimist(process.argv.slice(2)));
 import * as Wrappers from '../lib/node-wrappers';
 import processPendingTransactions from '../methods/tx-processor/process-pending-transactions'; 
 import processConfirmedTransactions from '../methods/tx-processor/process-confirmed-transactions';
+import config from '../lib/utilities/config';
 
 // A collection of all initialized BlockchainNode instances. 
 const nodes: { [key: string]: Wrappers.BlockchainWrapper } = {}; 
@@ -91,7 +92,8 @@ const run = async () => {
     }
 
     if(nodesToInit.includes('ETH')) {
-        const ethWrapper = new Wrappers.ETHWrapper(process.env.ETH_NODE as string); 
+        const ethWrapper = config.initEthWrapper();
+
         if(process.env.PROCESS_PENDING == "true")
             processPending(ethWrapper);
         if(process.env.PROCESS_CONFIRMED == "true")

@@ -2,14 +2,13 @@ import BlockchainWrapper from "../base";
 import Web3 from 'web3'; 
 
 export default class ARBIWrapper extends BlockchainWrapper {
-    public web3: Web3;
-    public options: { [key: string]: any };
+    private web3: Web3;
 
     constructor() {
         super('ARBI');
 
         // Initialize web3
-        this.options = {
+        const options = {
             clientConfig: {
                 maxReceivedFrameSize: 10000000000,
                 maxReceivedMessageSize: 10000000000,
@@ -24,7 +23,7 @@ export default class ARBIWrapper extends BlockchainWrapper {
             }
         };
 
-        const provider = new Web3.providers.WebsocketProvider(process.env.QUICKNODE_ARBI, this.options); 
+        const provider = new Web3.providers.WebsocketProvider(process.env.QUICKNODE_ARBI, options); 
         this.web3 = new Web3(provider); 
     }
 

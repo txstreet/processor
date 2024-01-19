@@ -1,17 +1,17 @@
 import BlockchainWrapper from "../base";
 import Web3 from 'web3';
+import WebsocketProvider from 'web3-providers-ws';
+import { Web3Geth, Web3Besu } from './web3_extended';
 
-
-export default class ETHWrapper extends BlockchainWrapper {
-    public web3: Web3;
-    public options: { [key: string]: any };
-    // public blockSubscription: 
+abstract class ETHWrapperBase extends BlockchainWrapper {
+    private wsProvider: WebsocketProvider;
+    protected web3: Web3;
 
     constructor(host: string) {
         super('ETH');
 
         // Initialize web3
-        this.options = {
+        const options = {
             clientConfig: {
                 maxReceivedFrameSize: 10000000000,
                 maxReceivedMessageSize: 10000000000,
@@ -26,16 +26,10 @@ export default class ETHWrapper extends BlockchainWrapper {
             }
         };
 
-        const provider = new Web3.providers.WebsocketProvider(host, this.options);
-        this.web3 = new Web3(provider);
+        this.wsProvider = new Web3.providers.WebsocketProvider(host, options);
+        this.web3 = new Web3(this.wsProvider);
 
-        // Add txpoorl content, inspect, and status functions. 
-        this.web3.eth.extend({
-            property: 'txpool',
-            methods: [
-                { name: "status", call: "txpool_status" }
-            ]
-        });
+        this.extendWeb3();
     }
 
     public initEventSystem() {
@@ -315,4 +309,59 @@ export default class ETHWrapper extends BlockchainWrapper {
         if (!data.height) return false;
         return true;
     }
+
+    public async stop(): Promise<void> {
+      await this.wsProvider.disconnect();
+    }
+
+    public abstract mempoolSize(): Promise<number>;
+
+    protected abstract extendWeb3(): void;
+};
+
+class ETHWrapper extends ETHWrapperBase {
+  protected extendWeb3() {
+    this.web3.eth.extend({
+      property: 'txpool',
+      methods: [
+        { name: "status", call: "txpool_status" }
+      ]
+    });
+  }
+
+  public async mempoolSize(): Promise<number> {
+    const status = await this.web3Geth().eth.txpool.status(); 
+
+    return parseInt(status.pending) + parseInt(status.queued);
+  }
+
+  private web3Geth(): Web3Geth {
+    return this.web3 as Web3Geth;
+  }
 }
+
+class ETHBesuWrapper extends ETHWrapper {
+  protected extendWeb3() {
+    this.web3.eth.extend({
+      property: 'txpool',
+      methods: [
+        { name: "besuStatistics", call: "txpool_besuStatistics" }
+      ]
+    });
+  }
+
+  public async mempoolSize(): Promise<number> {
+    const stats = await this.web3Besu().eth.txpool.besuStatistics();
+
+    return stats.localCount + stats.remoteCount;
+  }
+
+  private web3Besu(): Web3Besu {
+    return this.web3 as Web3Besu;
+  }
+}
+
+export {
+  ETHWrapper,
+  ETHBesuWrapper,
+};

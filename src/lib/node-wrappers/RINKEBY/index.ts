@@ -2,15 +2,13 @@ import BlockchainWrapper from "../base";
 import Web3 from 'web3'; 
 
 export default class RINKEBYWrapper extends BlockchainWrapper {
-    public web3: Web3;
-    public options: { [key: string] : any }; 
-    // public blockSubscription: 
+    private web3: Web3;
 
     constructor(host: string) {
         super('RINKEBY'); 
 
         // Initialize web3
-        this.options = { 
+        const options = { 
             clientConfig: {
                 maxReceivedFrameSize: 10000000000,
 				maxReceivedMessageSize: 10000000000,
@@ -25,7 +23,7 @@ export default class RINKEBYWrapper extends BlockchainWrapper {
             }
         }; 
         
-        const provider = new Web3.providers.WebsocketProvider(host, this.options); 
+        const provider = new Web3.providers.WebsocketProvider(host, options); 
         this.web3 = new Web3(provider); 
     }
 

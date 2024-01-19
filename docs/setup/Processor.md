@@ -44,6 +44,8 @@ QUICKNODE_ARBI=
 
 #Replace 0.0.0.0 with the private IP from each blockchain node
 ETH_NODE=ws://0.0.0.0:8546
+# Or:
+ETH_BESU_NODE=ws://0.0.0.0:8546
 LTC_NODE=0.0.0.0
 BTC_NODE=0.0.0.0
 XMR_NODE=0.0.0.0

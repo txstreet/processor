@@ -1,7 +1,7 @@
 import path from 'path';
 import redis from '../../../databases/redis'; 
 import mongodb from '../../../databases/mongodb';
-import { ETHWrapper } from '../../../lib/node-wrappers'; 
+import config from '../../utilities/config';
 
 enum ExecutionType {
     Large,
@@ -65,7 +65,7 @@ const getQueryForExecutionType = (chain: string, executionType: ExecutionType): 
 
 export default async (chain: string): Promise<void> => {
     try {
-        const node = new ETHWrapper(process.env.ETH_NODE as string);
+        const node = config.initEthWrapper();
 
         const { database } = await mongodb();
         const collection = database.collection('transactions_' + chain || ''); 
