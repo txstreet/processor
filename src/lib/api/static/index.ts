@@ -83,16 +83,9 @@ staticRouter.get('/blocks/:ticker/:hash', async (request: Request, response: Res
             console.log(`Static request served from memory cache.`);
             return response.set('content-type', 'application/json').send(data); 
         }
-        data = await readNFSFile(filePath); 
-        // Sanity
-        if(!data || !data.length) {
-            return sendError();
-        }
 
-        // This will throw an error if the JSON data is not valid, hitting the catch
-        // and telling cloudflare to not cache the data. 
-        const parsed = JSON.parse(data);
-        if(!parsed) console.error("Cannot get: " + filePath);
+        const parsed = await readNFSObject(filePath);
+
         delete parsed.note;
         delete parsed.tx;
         if(!verbose){
@@ -109,5 +102,24 @@ staticRouter.get('/blocks/:ticker/:hash', async (request: Request, response: Res
         return sendError(); 
     }
 });
+
+const readNFSObject = async (filePath: string): Promise<any> => {
+  // If the Redis key `filePath` doesn't exist, `readNFSFile` returns `"null"`.
+  const data = await readNFSFile(filePath); 
+
+  // Sanity
+  let parsed;
+  if(data && data.length) {
+      // This will throw an error if the JSON data is not valid, hitting
+      // the catch and telling cloudflare to not cache the data. 
+      parsed = JSON.parse(data);
+  }
+
+  if (parsed && typeof parsed === "object") {
+    return parsed;
+  }
+
+  throw `Cannot get ${filePath} (data: ${JSON.stringify(data)})`;
+}
 
 export default staticRouter;
