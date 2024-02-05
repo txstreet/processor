@@ -27,7 +27,12 @@ export default async (wrapper: BlockchainWrapper, blockHash: string, blockHeight
                     updateOne: {
                         filter: { hash: transaction.hash },
                         update: { 
-                            $set: { ...transaction, blockHash, blockHeight, note: '[block-processor]: line31' },
+                            $set: {
+                              ...transaction,
+                              blockHash,
+                              blockHeight,
+                              note: '[block-processor]: create-transaction-requests (objects)'
+                            },
                             $unset: { dropped: "" },
                             $setOnInsert
                         },
@@ -43,7 +48,11 @@ export default async (wrapper: BlockchainWrapper, blockHash: string, blockHeight
                     updateOne: {
                         filter: { hash },
                         update: { 
-                            $set: { blockHash, blockHeight, note: '[block-processor]: line47' },
+                            $set: {
+                              blockHash,
+                              blockHeight,
+                              note: '[block-processor]: create-transaction-requests (strings)'
+                            },
                             $unset: { dropped: "" },
                             $setOnInsert
                         },
