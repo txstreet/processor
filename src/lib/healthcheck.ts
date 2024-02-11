@@ -1,5 +1,6 @@
 import config from './utilities/config';
 import axios from 'axios';
+import mongodb from '../databases/mongodb';
 
 type checkFn = () => Promise<void>;
 
@@ -81,7 +82,12 @@ const checkBulkEthApi = async () => {
 };
 
 const checkMongodb = async() => {
-  throw new Error("test");
+  const { database } = await mongodb();
+  const result = await database.command({ ping: 1 });
+
+  if (result.ok !== 1) {
+    throw new Error(`Unexpected ping result: ${result}`);
+  }
 };
 
 const handleRequest = async (request: any, response: any) => {
