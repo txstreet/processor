@@ -10,9 +10,9 @@ import mongodb from '../databases/mongodb';
 import { lastBlocks  } from '../lib/websocket/redis/handlers/block';
 import { lastHouseTxs  } from '../lib/websocket/redis/handlers/pendingTx';
 import { formatTransaction } from '../lib/utilities';
+import { handleRequest as handleHealthckeck } from '../lib/healthcheck';
+
 const app = Express(); 
-
-
 const server = http.createServer(app); 
 
 const io = require('socket.io')(server, {
@@ -125,9 +125,7 @@ const start = async () => {
         });
     });
 
-    app.get('/healthcheck', (request: any, response: Response) => {
-        response.status(200).send("OK"); 
-    });
+    app.get('/healthcheck', handleHealthckeck);
 
     console.log('Start listening');
 

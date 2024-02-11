@@ -1,12 +1,13 @@
 FROM txstreet-processor
 
-COPY --chown=root:root --chmod=0555 docker/healthcheck-api /docker-healthcheck
+COPY --chown=root:root --chmod=0555 docker/healthcheck /docker-healthcheck
+COPY --chown=root:root --chmod=0555 docker/healthcheck-api /docker-healthcheck-api
 
 HEALTHCHECK \
   --interval=30s \
   --timeout=20s \
   --retries=3 \
   --start-period=40s \
-  CMD /docker-healthcheck
+  CMD /docker-healthcheck-api
 
 CMD ["node", "./dist/entry/api"]

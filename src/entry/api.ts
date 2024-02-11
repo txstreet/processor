@@ -6,6 +6,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import apiRouter from '../lib/api';
 import staticRouter from '../lib/api/static';
+import { handleRequest as handleHealthckeck } from '../lib/healthcheck';
 
 // Configure credd-origin-resource-sharing.
 const whitelist: string[] = ['localhost', 'txstreet.com'];
@@ -28,9 +29,7 @@ app.use(express.json());
 app.use(compression());
 app.use(cors({ origin: '*'}));
 
-app.get('/healthcheck', (request: any, response: any) => {
-    response.status(200).send('OK'); 
-});
+app.get('/healthcheck', handleHealthckeck);
 
 // Create & assign the default router.
 const router: express.Router = express.Router();

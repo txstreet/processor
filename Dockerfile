@@ -33,3 +33,10 @@ COPY --chown=node:node --from=builder /home/node/app/node_modules ./node_modules
 
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--enable-source-maps"
+
+HEALTHCHECK \
+  --interval=30s \
+  --timeout=20s \
+  --retries=3 \
+  --start-period=40s \
+  CMD /docker-healthcheck
