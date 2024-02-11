@@ -1,13 +1,17 @@
 import config from './utilities/config';
 import axios from 'axios';
 import mongodb from '../databases/mongodb';
+import { clients as redisClients } from '../databases/redisEvents';
+import { RedisClient } from 'redis';
 
 type checkFn = () => Promise<void>;
 
 const checkAll = async (): Promise<boolean> => {
   const checks: {[key: string]: checkFn} = {
-    "bulk-eth-api": checkBulkEthApi,
-    "mongodb": checkMongodb,
+    "bulk-eth-api":     checkBulkEthApi,
+    "mongodb":          checkMongodb,
+    "redis-subscriber": redisChecker("subscriber"),
+    "redis-publisher":  redisChecker("publisher"),
   };
   
   const results: {[key: string]: checkResult} = {};
@@ -89,6 +93,35 @@ const checkMongodb = async() => {
     throw new Error(`Unexpected ping result: ${result}`);
   }
 };
+
+const redisChecker = (clientName: string): checkFn => {
+  const client: RedisClient = getRedisClient(clientName);
+
+  return (): Promise<void> => {
+    return checkRedis(client);
+  };
+}
+
+const getRedisClient = (name: string): RedisClient => {
+  switch (name) {
+    case "publisher":
+      return redisClients.publisher;
+    case "subscriber":
+      return redisClients.subscriber;
+  }
+
+  throw new Error(`Unknown Redis client: ${name}`);
+};
+
+const checkRedis = async (client: RedisClient): Promise<void> => {
+  const ok = await client.ping();
+
+  if (!ok) throw new Error(`Ping didn't retun true`);
+};
+
+const checkFail = async (): Promise<void> => {
+  throw new Error(`Dummy failure`);
+}
 
 const handleRequest = async (request: any, response: any) => {
   response.status(200).send('OK'); 

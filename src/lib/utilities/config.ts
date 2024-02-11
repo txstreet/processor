@@ -3,39 +3,56 @@ import { ETHWrapper, ETHBesuWrapper } from '../node-wrappers';
 const fs = require("fs");
 
 class Config {
-  public ethBulkUrl: string;
-  public dataDir:    string;
+  public mongodbUri:      string;
+  public mongodbDatabase: string;
+  public redisUri: string;
+  public ethBulkUrl:      string;
+  public dataDir:         string;
 
   private ethNodeUrl:     string;
   private ethBesuNodeUrl: string | null;
 
   constructor(env = process.env) {
-    this.ethNodeUrl     = env.ETH_NODE;
-    this.ethBesuNodeUrl = env.ETH_BESU_NODE;
-    this.ethBulkUrl     = env.ETH_BULK_URL;
-    this.dataDir        = env.DATA_DIR;
+    this.mongodbUri      = env.MONGODB_URI;
+    this.mongodbDatabase = env.MONGODB_DATABASE;
+    this.redisUri        = env.REDIS_URI;
+    this.ethNodeUrl      = env.ETH_NODE;
+    this.ethBesuNodeUrl  = env.ETH_BESU_NODE;
+    this.ethBulkUrl      = env.ETH_BULK_URL;
+    this.dataDir         = env.DATA_DIR;
 
+    if (!/^mongodb:/.test(this.mongodbUri)) {
+      throw new Error("Invalid $MONGODB_URI");
+    }
+
+    if (!/\w/.test(this.mongodbDatabase)) {
+      throw new Error("Invalid $MONGODB_DATABASE");
+    }
+
+    if (!/^redis:/.test(this.redisUri)) {
+      throw new Error("Invalid $REDIS_URI");
+    }
 
     if (this.ethBesuNodeUrl) {
       if (!/^wss?:/i.test(this.ethBesuNodeUrl)) {
-        throw "Invalid $ETH_BESU_NODE";
+        throw new Error("Invalid $ETH_BESU_NODE");
       }
     } else {
       if (!/^wss?:/i.test(this.ethNodeUrl)) {
-        throw "Invalid $ETH_NODE";
+        throw new Error("Invalid $ETH_NODE");
       }
     }
 
     if (!/^https?:/i.test(this.ethBulkUrl)) {
-      throw "Invalid $ETH_BULK_URL";
+      throw new Error("Invalid $ETH_BULK_URL");
     }
 
     if (!/\w/.test(this.dataDir)) {
-      throw "Invalid $DATA_DIR";
+      throw new Error("Invalid $DATA_DIR");
     }
 
     if (!isDirectory(this.dataDir)) {
-      throw "Not a directory: $DATA_DIR";
+      throw new Error("Not a directory: $DATA_DIR");
     }
   }
 

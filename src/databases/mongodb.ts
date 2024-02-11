@@ -1,15 +1,24 @@
+import config from '../lib/utilities/config';
 import { MongoClient } from 'mongodb';
-const uri = process.env.MONGODB_URI || '';
-const client = new MongoClient(uri);
 
-var connection: MongoClient | undefined;
+type connectionResult = {
+  connection: MongoClient,
+  database: any, // Not `mongodb.Db`, that causes lots of compilation errors
+};
 
-const createExportObject = async (database: string = process.env.MONGODB_DATABASE): Promise<any> => {
-    if (connection) return { connection, database: connection.db(database) };
-    connection = await client.connect();
+let connection: MongoClient | undefined;
 
-    const db = connection.db(database);
-    return { connection, database: db };
-}
+const getConnection = async (): Promise<connectionResult> => {
+  if (!connection) connection = await establishConnection();
+  const database = connection.db(config.mongodbDatabase);
 
-export default createExportObject;
+  return {connection, database};
+};
+
+const establishConnection = async (): Promise<MongoClient> => {
+  const client = new MongoClient(config.mongodbUri);
+  return await client.connect();
+};
+
+
+export default getConnection;

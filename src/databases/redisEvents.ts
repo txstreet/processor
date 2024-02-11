@@ -1,35 +1,38 @@
 import EventEmitter from 'eventemitter3'; 
-import * as redis from 'redis';
+import { createClient, RedisClient } from 'redis';
+import config from '../lib/utilities/config';
 
-const publisher = redis.createClient({
-    url: process.env.REDIS_URI,
-});
+type clientsMap = {
+  publisher: RedisClient;
+  subscriber: RedisClient;
+};
 
-const subscriber = redis.createClient({
-    url: process.env.REDIS_URI,
-});
+const clients: clientsMap = {
+  publisher: createClient({url: config.redisUri}),
+  subscriber: createClient({url: config.redisUri}),
+};
 
 const on = (key: string, callback: any) => {
-    subscriber.on(key, callback); 
+    clients.subscriber.on(key, callback); 
 }
 
 const unsubscribe = (key: string) => {
-    subscriber.unsubscribe(key); 
+    clients.subscriber.unsubscribe(key); 
 }
 
 const subscribe = (key: string) => {
-    subscriber.subscribe(key); 
+    clients.subscriber.subscribe(key); 
 }
 
 const publish = (key: string, value: string | object) => {
     if(typeof value !== "string")
         value = JSON.stringify(value);
-    publisher.publish(key, value); 
+    clients.publisher.publish(key, value); 
 }
 
 const events = new EventEmitter(); 
 
-subscriber.on('message', (channel: string, messageStr: string) => {
+clients.subscriber.on('message', (channel: string, messageStr: string) => {
     try {
         const message = JSON.parse(messageStr); 
         events.emit(channel, message); 
@@ -44,5 +47,7 @@ export default {
     unsubscribe,
     subscribe,
     publish, 
-    events
-}
+    events,
+};
+
+export { clients };
