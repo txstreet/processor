@@ -1,4 +1,6 @@
 #!/bin/sh
 set -eo pipefail
 
-true
+cd /home/node/app
+
+exec node ./dist/entry/healthcheck.js

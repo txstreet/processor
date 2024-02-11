@@ -1,9 +1,9 @@
 #!/bin/sh
 set -eo pipefail
 
-/docker-healthcheck
-
 result=`wget -q -O- http://localhost:${WEBSOCKET_PORT}/healthcheck`
 echo result=$result
 
 [[ "$result" == "OK" ]]
+
+exec /docker-healthcheck

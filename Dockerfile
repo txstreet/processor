@@ -5,19 +5,19 @@ FROM node:21-alpine AS node-base
 #
 FROM node-base AS builder
 
-COPY . /home/node/app
-
 RUN apk --update --no-cache add yarn git
 
+WORKDIR /home/node/app
+COPY package.json yarn.lock ./
 RUN chown -R node:node /home/node/app
 
 USER node
 
-WORKDIR /home/node/app
-
 RUN test -f yarn.lock
 RUN yarn install
-RUN yarn tsc
+
+COPY ./ ./
+RUN yarn build
 
 ##
 # Runtime image
@@ -33,6 +33,8 @@ COPY --chown=node:node --from=builder /home/node/app/node_modules ./node_modules
 
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--enable-source-maps"
+
+COPY --chown=root:root --chmod=0555 docker/healthcheck /docker-healthcheck
 
 HEALTHCHECK \
   --interval=30s \
