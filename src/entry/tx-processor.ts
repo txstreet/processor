@@ -2,10 +2,6 @@
 import dotenv from 'dotenv';
 dotenv.config(); 
 
-// Merge command line args into environment variables, overwriting values specified in .env
-import minimist from 'minimist';
-Object.assign(process.env, minimist(process.argv.slice(2)));
-
 // Misc imports 
 import * as Wrappers from '../lib/node-wrappers';
 import processPendingTransactions from '../methods/tx-processor/process-pending-transactions'; 
@@ -15,16 +11,8 @@ import config from '../lib/utilities/config';
 // A collection of all initialized BlockchainNode instances. 
 const nodes: { [key: string]: Wrappers.BlockchainWrapper } = {}; 
 
-// Iterate over blockchain implementations and initialize them if they're
-const blockchainImpls = ['BTC', 'LTC', 'BCH', 'XMR', 'ETH', 'RINKEBY']
-var nodesToInit: string[] = []; 
-
-// Check for command line arguments matching that of blockchain implementations 
-Object.keys(process.env).forEach(key => {
-    if(blockchainImpls.includes(key.toUpperCase())) {
-        nodesToInit.push(key.toUpperCase()); 
-    }
-})
+const nodesToInit = config.mustEnabledChains();
+console.log({nodesToInit});
 
 // Non event-blocking infinite loop for processPending
 const processPending = async (wrapper: Wrappers.BlockchainWrapper) => {

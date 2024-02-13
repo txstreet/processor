@@ -1,9 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import minimist from 'minimist'; 
-Object.assign(process.env, minimist(process.argv.slice(2)));
-
 import updateHouseData from '../lib/tasks/jobs/update-house-data';
 import updateHousePriority from '../lib/tasks/jobs/update-house-priority';
 import updatePricing from '../lib/tasks/jobs/update-pricing';
@@ -14,17 +11,17 @@ import xmrRemoveBadTxs from '../lib/tasks/jobs/xmr-remove-bad-txs';
 import btcBlockBroadcast from '../lib/tasks/jobs/btc-block-broadcast';
 import xmrBlockBroadcast from '../lib/tasks/jobs/xmr-block-broadcast';
 import ethRecentContracts from '../lib/tasks/jobs/eth-recent-contracts';
+import config from '../lib/utilities/config';
 import { chainConfig } from '../data/chains';
 var allowed = Object.keys(chainConfig);
-var chains: string[] = []; 
+var chains: string[] = config.mustEnabledChains();
 
 // Check for command line arguments matching that of blockchain implementations 
-Object.keys(process.env).forEach(key => {
-    if(allowed.includes(key.toUpperCase())) {
-        chains.push(key.toUpperCase()); 
-    }
-})
-
+for (const name of chains) {
+  if(!allowed.includes(name)) {
+    throw new Error(`Unknown chain: ${name}`);
+  }
+}
 
 // Utility for seconds->milliseconds.
 const seconds = (amount: number) => amount * 1000; 

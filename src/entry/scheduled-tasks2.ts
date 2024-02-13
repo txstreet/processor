@@ -1,9 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config({});
 
-import minimist from 'minimist';
-Object.assign(process.env, minimist(process.argv.slice(2)));
-
 import DropoutContainer from '../lib/tasks2/containers/Dropout';
 import ObtainTransactionsFromDatabase from '../lib/tasks2/tasks/ObtainTransactionsFromDatabase';
 import { ProjectedEthereumTransaction, ProjectedEthereumBlock, ProjectedXMRTransaction, ProjectedXMRBlock, ProjectedBTCTransaction, ProjectedBTCBlock } from '../lib/tasks2/types';
@@ -11,22 +8,9 @@ import path from 'path';
 import { BTCBlocksSchema, BTCTransactionsSchema, ETHBlocksSchema, XMRBlocksSchema, XMRTransactionsSchema } from '../data/schemas';
 import ObtainBlocksFromDatabase from '../lib/tasks2/tasks/ObtainBlocksFromDatabase';
 import ObtainRollupBlocksFromDatabase from '../lib/tasks2/tasks/ObtainRollupBlocksFromDatabase';
+import config from '../lib/utilities/config';
 
-const SUPPORTED_CHAINS = ['ETH', 'XMR', 'BTC', 'LTC', 'BCH', 'ARBI'];
-let chainToInit: string = null;
-
-// Check the command line arguments to find one issuing a request for a supported chain. 
-Object.keys(process.env).forEach(key => {
-    if (SUPPORTED_CHAINS.includes(key.toUpperCase())) {
-        if (chainToInit)
-            throw `You may only configure this application to execute on a single chain at a time.`
-        chainToInit = key.toUpperCase();
-    }
-})
-
-// If there's no initializing chain, thrown nan error. 
-if (!chainToInit)
-    throw `No chain found to initialize, please start the application with ${SUPPORTED_CHAINS.map((value: any) => `--${value}`).join(", ")} as an option.`
+const chainToInit: string = config.mustEnabledChain();
 
 // A function used to wrap the initialization instructions of this script in an async/await context. 
 const initialize = async () => {

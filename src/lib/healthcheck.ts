@@ -3,17 +3,66 @@ import axios from 'axios';
 import mongodb from '../databases/mongodb';
 import { clients as redisClients } from '../databases/redisEvents';
 import { RedisClient } from 'redis';
+import minimist from 'minimist';
 
 type checkFn = () => Promise<void>;
+type checksMap = {[key: string]: checkFn};
 
-const checkAll = async (): Promise<boolean> => {
-  const checks: {[key: string]: checkFn} = {
-    "bulk-eth-api":     checkBulkEthApi,
+const toCheck = (): checksMap => {
+  return {
+    ...baseChecks(),
+    ...chainsChecks(),
+  };
+};
+
+const baseChecks = (): checksMap => {
+  return {
     "mongodb":          checkMongodb,
     "redis-subscriber": redisChecker("subscriber"),
     "redis-publisher":  redisChecker("publisher"),
   };
-  
+};
+
+const chainsChecks = (): checksMap => {
+  const all: {[key: string]: checksMap} = {
+    "ETH": {
+      "bulk-eth-api": checkBulkEthApi,
+      "eth-node": checkEthNode,
+    },
+    // "BTC": {
+    //   "btc-node": checkBtcNode,
+    // },
+    // "LTC": {
+    //   "ltc-node": checkLtcNode,
+    // },
+    // "XMR": {
+    //   "xmr-node": checkXmrNode,
+    // },
+  }
+
+  const chains = config.enabledChains();
+  console.log("Enabled chains:", chains);
+
+  let map: checksMap = {};
+  for (const chain of chains) {
+    if (!(chain in all)) continue;
+
+    map = { ...map, ...all[chain] };
+  }
+
+  return map;
+};
+
+const checkEthNode = async (): Promise<void> => {
+  const wrapper = config.initEthWrapper();
+
+  await wrapper.mempoolSize();
+};
+
+const checkAll = async (): Promise<boolean> => {
+  const checks: checksMap = toCheck();
+  console.log("Healthchecks:", Object.keys(checks));
+
   const results: {[key: string]: checkResult} = {};
   for (const [name, fn] of Object.entries(checks)) {
     const result = await check(name, (fn as checkFn));

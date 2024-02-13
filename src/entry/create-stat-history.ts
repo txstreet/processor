@@ -1,3 +1,5 @@
+import config from '../lib/utilities/config';
+
 import dotenv from 'dotenv';
 dotenv.config({ path: __dirname + '/../../.env' });
 
@@ -8,14 +10,15 @@ import mongodb from '../databases/mongodb';
 // @ts-ignore-nextline
 import deepEqual from 'deepequal'; 
 
-if(!process.env.chain)
-    throw '--chain not specified';
 if(!process.env.interval)
     throw '--interval not specified'; 
 
+const chain: string = config.mustEnabledChain();
+console.log({chain});
+
 const isCron = process.env.cron == "true"; 
-const chain = process.env.chain;
 const expires = (process.env.expires || '').toLowerCase();
+
 let millisToAdd = 0;
 if(expires.includes('s'))
     millisToAdd = parseInt(process.env.expires) * 1000; 

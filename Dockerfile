@@ -37,8 +37,8 @@ ENV NODE_OPTIONS="--enable-source-maps"
 COPY --chown=root:root --chmod=0555 docker/healthcheck /docker-healthcheck
 
 HEALTHCHECK \
-  --interval=30s \
-  --timeout=20s \
-  --retries=3 \
-  --start-period=40s \
+  --interval=10s \
+  --timeout=10s \
+  --retries=2 \
+  --start-period=20s \
   CMD /docker-healthcheck

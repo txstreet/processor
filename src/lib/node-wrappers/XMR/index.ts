@@ -50,8 +50,12 @@ export default class XMRWrapper extends BlockchainWrapper {
                         memcache.put(`xmr-block-${hash}`, 1); 
                         this.emit('confirmed-block', hash);
                         break; 
+                    default:
+                      throw new Error(`Unhandled command: ${command}`);
                 }
-            } catch (error) { /*ignore*/ };
+            } catch (error) {
+              console.error(error);
+            };
         });
     }
 

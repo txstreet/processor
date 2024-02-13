@@ -2,10 +2,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Merge command line args into environment variables, overwriting values specified in .env
-import minimist from 'minimist';
-Object.assign(process.env, minimist(process.argv.slice(2)));
-
 // Misc imports 
 import processTransaction from '../methods/node-subscriber/process-transaction';
 import processBlock from '../methods/node-subscriber/process-block';
@@ -17,20 +13,8 @@ if (process.env.USE_DATABASE === "true")
     mongodb();
 
 // The chain implementations to be processed.
-var chainsToSubscribe: string[] = [];
-
-// Check for command line arguments matching that of blockchain implementations 
-const blockchainImpls = ['BTC', 'LTC', 'XMR', 'BCH', 'ETH', 'RINKEBY', 'ARBI']
-Object.keys(process.env).forEach(key => {
-    if (blockchainImpls.includes(key.toUpperCase())) {
-        chainsToSubscribe.push(key.toUpperCase());
-    }
-});
-
-// If we didn't override the value by specifying blockchains via command line arguments,
-// parse the default array of blockchain implementations we're supposed to use from .env 
-if (chainsToSubscribe.length == 0)
-    chainsToSubscribe = JSON.parse(process.env.CHAINS).map((ticker: string) => ticker.toUpperCase());
+var chainsToSubscribe: string[] = config.mustEnabledChains();
+console.log({chainsToSubscribe});
 
 const getLatestBlockLoop = async (wrapper: any) => {
     if (process.env.USE_DATABASE !== "true") return;
