@@ -143,8 +143,6 @@ const chainsFromArgs = (): string[] => {
 };
 
 const chainArgs = (): string[] => {
-
-
   const args = minimist(process.argv.slice(2));
   let chains: string[] = [];
 

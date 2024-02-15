@@ -230,8 +230,8 @@ const handleHealthcheck = async (request: Request, response: Response) => {
 }
 
 const startServer = () => {
-  const port   = config.mustHealthcheckPort();
-  const app    = Express();
+  const port = config.mustHealthcheckPort();
+  const app  = Express();
 
   app.get('/healthcheck', handleHealthcheck);
 
