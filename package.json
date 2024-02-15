@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha --recursive dist/test",
     "build": "yarn tsc",
-    "typecheck": "yarn tsc && yarn tsc-strict"
+    "build-strict": "yarn tsc && yarn tsc-strict"
   },
   "author": "",
   "license": "ISC",

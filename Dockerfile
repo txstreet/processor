@@ -17,7 +17,7 @@ RUN test -f yarn.lock
 RUN yarn install
 
 COPY ./ ./
-RUN yarn build
+RUN yarn build-strict
 
 ##
 # Runtime image

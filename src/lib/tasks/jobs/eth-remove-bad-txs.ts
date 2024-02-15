@@ -167,8 +167,6 @@ export default async (chain: string): Promise<void> => {
         }
     } catch (error) {
         console.error(error);
-    } finally {
-        await node.stop();
     }
 }
 

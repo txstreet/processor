@@ -25,6 +25,7 @@ class Config {
   private ethNodeUrl:      string;
   private ethBesuNodeUrl:  string | null;
   private healthcheckPort: number | null;
+  private ethWrapper:      ETHWrapper | null;
 
   constructor(env: envMap = process.env) {
     this.assignPublicVariables(env);
@@ -68,6 +69,7 @@ class Config {
     this.ethNodeUrl      = env.ETH_NODE;
     this.ethBesuNodeUrl  = env.ETH_BESU_NODE;
     this.healthcheckPort = numberOrNull(env.HEALTHCHECK_PORT);
+    this.ethWrapper      = null;
 
     if (this.ethBesuNodeUrl) {
       if (!/^wss?:/i.test(this.ethBesuNodeUrl)) {
@@ -85,10 +87,18 @@ class Config {
   }
 
   public initEthWrapper(): ETHWrapper {
-    return this.initEthBesuWrapper() || new ETHWrapper(this.ethNodeUrl);
+    if (!this.ethWrapper) {
+      this.ethWrapper = this.newEthWrapper();
+    }
+
+    return this.ethWrapper;
+  }
+
+  private newEthWrapper(): ETHWrapper {
+    return this.newEthBesuWrapper() || new ETHWrapper(this.ethNodeUrl);
   }
   
-  private initEthBesuWrapper(): ETHBesuWrapper | null {
+  private newEthBesuWrapper(): ETHBesuWrapper | null {
     if (!this.ethBesuNodeUrl) return null;
 
     return new ETHBesuWrapper(this.ethBesuNodeUrl);
