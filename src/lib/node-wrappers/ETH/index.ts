@@ -310,6 +310,10 @@ abstract class ETHWrapperBase extends BlockchainWrapper {
         return true;
     }
 
+    public isDisconnectError(err: Error): boolean {
+      return(/connection not open on send/i.test(err.message))
+    }
+
     public async stop(): Promise<void> {
       await this.wsProvider.disconnect();
     }

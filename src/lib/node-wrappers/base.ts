@@ -97,4 +97,8 @@ export default abstract class BlockchainWrapper extends EventEmitter {
      * Gets the current block height from the node
      */
     public abstract getCurrentHeight(): Promise<null | number>;
+
+    public isDisconnectError(_: Error): boolean {
+      return false;
+    }
 }

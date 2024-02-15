@@ -9,18 +9,19 @@ import mongodb from '../databases/mongodb';
 import * as Hooks from '../lib/chain-implementations';
 import redis from '../databases/redis';
 import config from '../lib/utilities/config';
-if (process.env.USE_DATABASE === "true")
-    mongodb();
+import { BlockchainWrapper } from '../lib/node-wrappers';
 
 // The chain implementations to be processed.
 var chainsToSubscribe: string[] = config.mustEnabledChains();
 console.log({chainsToSubscribe});
 
-const getLatestBlockLoop = async (wrapper: any) => {
+class DisconnectionError extends Error {};
+
+const getLatestBlockLoop = async (wrapper: BlockchainWrapper) => {
     if (process.env.USE_DATABASE !== "true") return;
     const { database } = await mongodb();
     try {
-        const height = await wrapper.getCurrentHeight();
+        const height = await getCurrentHeight(wrapper);
         if (!isNaN(height) && height > 100) {
             //height is a valid number
             const heightExistsInDb = await database.collection('blocks').find({ chain: wrapper.ticker, height }).project({ height: 1 }).limit(1).toArray();
@@ -38,12 +39,29 @@ const getLatestBlockLoop = async (wrapper: any) => {
             }
 
         }
-        setTimeout(() => { getLatestBlockLoop(wrapper); }, 1000);
     } catch (error) {
         console.error(error);
-        setTimeout(() => { getLatestBlockLoop(wrapper); }, 1000);
+
+        if (error instanceof DisconnectionError) {
+          process.exit(1);
+        }
     }
+    setTimeout(() => { getLatestBlockLoop(wrapper); }, 1000);
 }
+
+const getCurrentHeight = async (wrapper: BlockchainWrapper): Promise<null | number> => {
+  try {
+    return await wrapper.getCurrentHeight();
+  } catch (err) {
+    if (wrapper.isDisconnectError(err)) {
+      throw new DisconnectionError(
+        `Blockchain client disconnected, exiting: ${err}`
+      );
+    }
+
+    throw err;
+  }
+};
 
 const init = async () => {
     // let database: any = null;
