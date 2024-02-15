@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import BlockchainWrapper from "../base";
 // import bitcore from 'bitcore-lib';
 //@ts-ignore

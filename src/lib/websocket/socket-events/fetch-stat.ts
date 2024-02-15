@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import SocketIO from 'socket.io';
 import mongodb from '../../../databases/mongodb';
 import io from '../../../entry/websocket-server'

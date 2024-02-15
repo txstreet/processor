@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { BlockchainWrapper } from '../../lib/node-wrappers';
 import mongodb from '../../databases/mongodb'; 
 

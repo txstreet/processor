@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 /**
  * The purpose of this implementation is to create an interval system which is time-accurate without allowing for
  * overlap between executions. 

@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import BlockchainWrapper from "../base";
 import Web3 from 'web3'; 
 

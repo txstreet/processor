@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive dist/test",
-    "build": "yarn tsc"
+    "build": "yarn tsc",
+    "typecheck": "yarn tsc && yarn tsc-strict"
   },
   "author": "",
   "license": "ISC",
@@ -40,6 +41,7 @@
     "node-html-parser": "^3.3.4",
     "redis": "^3.1.2",
     "socket.io": "^3.1.2",
+    "typescript-strict-plugin": "^2.3.0",
     "web3": "^1.8.0",
     "yaml": "^1.10.2",
     "zeromq": "^6.0.0-beta.6"

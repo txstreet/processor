@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import axios from 'axios';
 import mongodb from '../../../databases/mongodb';
 import { CoingeckoTaskResult, CoinLookupTable, WebResponse } from '../global';

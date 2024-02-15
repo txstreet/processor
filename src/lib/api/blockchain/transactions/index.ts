@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import mongodb from "../../../../databases/mongodb"
 import { Request, Response, Router } from 'express';
 import getSubscriber from '../subscriber';

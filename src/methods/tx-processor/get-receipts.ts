@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { BlockchainWrapper } from '../../lib/node-wrappers';
 import config from '../../lib/utilities/config';
 import axios from 'axios';

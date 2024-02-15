@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { ETHWrapper, ETHBesuWrapper } from '../node-wrappers';
 import { chainConfig } from '../../data/chains';
 import minimist from 'minimist';

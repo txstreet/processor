@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import SocketIO from 'socket.io';
 import { lastHouseTxs } from '../redis/handlers/pendingTx';
 

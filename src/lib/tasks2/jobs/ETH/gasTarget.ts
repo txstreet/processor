@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { ProjectedEthereumBlock } from '../../types';
 
 export default (latestBlock: ProjectedEthereumBlock) => {

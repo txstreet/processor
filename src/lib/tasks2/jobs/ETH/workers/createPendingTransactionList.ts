@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 // IN PROGRESS - OPTIMIZATION|| Refactoring to use memory transactions, paused to fix other important issues. 
 
 import mongodb from '../../../../../databases/mongodb';

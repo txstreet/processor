@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import dotenv from 'dotenv';
 dotenv.config();
 

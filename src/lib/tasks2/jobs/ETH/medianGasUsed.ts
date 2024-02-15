@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { median } from '../../../../lib/utilities';
 import { ProjectedEthereumBlock } from '../../types';
  

@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { BlockchainWrapper } from '../../lib/node-wrappers';
 import redis from '../../databases/redis';
 import config from '../../lib/utilities/config';

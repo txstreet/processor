@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { setInterval } from "../../../utils/OverlapProtectedInterval";
 import mongodb from '../../../../../databases/mongodb';
 import redis from '../../../../../databases/redisEvents';

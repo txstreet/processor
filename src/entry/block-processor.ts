@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 // Load environment variables from .env
 import dotenv from 'dotenv';
 dotenv.config(); 

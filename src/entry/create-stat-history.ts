@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import config from '../lib/utilities/config';
 import { startServer as startHealthcheckServer } from '../lib/healthcheck';
 

@@ -6,6 +6,7 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
+    "strict": false,
     "noImplicitAny": true,
     "moduleResolution": "node",
     "declaration": true,
@@ -19,7 +20,15 @@
       "*": [
         "node_modules/*"
       ]
-    }
+    },
+    "plugins": [
+      {
+        "name": "typescript-strict-plugin",
+        "paths": [
+          "src"
+        ]
+      }
+    ]
   },
   "exclude": ["node_modules", "dist"]
 }
