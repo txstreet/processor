@@ -19,6 +19,7 @@ const toCheck = (): checksMap => {
 const baseChecks = (): checksMap => {
   return {
     "mongodb":          checkMongodb,
+    // "mongodb":          checkFail,
     "redis-subscriber": redisChecker("subscriber"),
     "redis-publisher":  redisChecker("publisher"),
   };
@@ -42,7 +43,6 @@ const chainsChecks = (): checksMap => {
   }
 
   const chains = config.enabledChains();
-  console.log("Enabled chains:", chains);
 
   let map: checksMap = {};
   for (const chain of chains) {
@@ -60,29 +60,16 @@ const checkEthNode = async (): Promise<void> => {
   await wrapper.mempoolSize();
 };
 
-const checkAll = async (): Promise<boolean> => {
+const checkAll = async (): Promise<CheckResultAggregate> => {
   const checks: checksMap = toCheck();
-  console.log("Healthchecks:", Object.keys(checks));
 
-  const results: {[key: string]: checkResult} = {};
+  const results: checkResultMap = {};
   for (const [name, fn] of Object.entries(checks)) {
     const result = await check(name, (fn as checkFn));
     results[name] = result;
-
-    printResult(name, result);
   }
 
-  let finalResult: boolean = true;
-  for (const [name, result] of Object.entries(results)) {
-    finalResult = finalResult && result.ok;
-
-    if (result.err) {
-      console.error("");
-      printError(name, result.err);
-    }
-  }
-
-  return finalResult;
+  return new CheckResultAggregate(results);
 };
 
 type checkResult = {
@@ -92,34 +79,93 @@ type checkResult = {
   durationMs: number;
 };
 
-const printResult = (name: string, result: checkResult): void => {
-  let message = (result.ok ? "[OK]" : " !! ") +
-    ` Health of ${name}: ${result.status} (in ${result.durationMs} ms)`;
+type checkResultAsJson = {
+  ok:         boolean;
+  status:     string;
+  err:        errorAsJson | null;
+  durationMs: number;
+};
 
-  console[result.ok ? "log" : "error"](message);
-}
+type errorAsJson = {
+  class:   string;
+  message: string;
+  stack:   string[];
+};
 
-const printError = (name: string, err: Error): void => {
-  console.error(`Error for ${name}:`);
-  console.error(err);
-}
+function checkResultAsJson(result: checkResult): checkResultAsJson {
+  return {
+    ok:         result.ok,
+    status:     result.status,
+    err:        result.err ? errorAsJson(result.err as Error) : null,
+    durationMs: result.durationMs,
+  };
+};
+
+function errorAsJson(err: Error): errorAsJson {
+  return {
+    class:   err.constructor.name,
+    message: err.message,
+    stack:   err.stack ? err.stack.split("\n") : [],
+  };
+};
 
 const check = async (name: string, fn: checkFn): Promise<checkResult> => {
   const t0 = new Date().valueOf();
-  const buildResult = (ok: boolean, status: string, err: Error | null): checkResult => {
-    const durationMs = (new Date().valueOf()) - t0;
 
-    return {ok, status, err, durationMs};
-  };
+  const buildResult =
+    (ok: boolean, status: string, err: Error | null): checkResult => {
+      const durationMs = (new Date().valueOf()) - t0;
+
+      return {ok, status, err, durationMs};
+    };
 
   try {
     await fn();
   } catch (err) {
-    return buildResult(false, `FAILURE: ${err}`, err);
+    return buildResult(false, `FAILURE: ${err}`, err as Error);
   }
 
   return buildResult(true, "OK", null);
 };
+
+type checkResultMap = {[key: string]: checkResult};
+type checkResultAggregateAsJson = {[key: string]: checkResultAsJson};
+
+class CheckResultAggregate {
+  private results: checkResultMap;
+
+  constructor(results: checkResultMap) {
+    this.results = results;
+  }
+
+  public ok(): boolean {
+    for (const result of Object.values(this.results)) {
+      if (!result.ok) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public logErrors(): void {
+    for (const [name, result] of Object.entries(this.results)) {
+      if (result.err) {
+        console.error(`Error for healthcheck "${name}":`, result.err);
+      }
+    }
+  }
+
+  public asJson(): checkResultAggregateAsJson {
+    const obj: checkResultAggregateAsJson = {};
+
+    for (const [name, result] of Object.entries(this.results)) {
+      obj[name] = checkResultAsJson(result);
+    }
+
+    return obj;
+  }
+}
 
 const checkBulkEthApi = async () => {
   const response = await axios.get(`${config.ethBulkUrl}/ping`)
@@ -174,14 +220,14 @@ const checkFail = async (): Promise<void> => {
 }
 
 const handleHealthcheck = async (request: Request, response: Response) => {
-  const ok = await checkAll();
+  const aggregate = await checkAll();
+  const status    = aggregate.ok() ? 200 : 503;
+  const body      = aggregate.asJson();
 
-  if (ok) {
-    response.status(200).send("OK\n"); 
-  } else {
-    response.status(503).send("Unhealthy\n"); 
-  }
-};
+  aggregate.logErrors();
+
+  response.status(status).json(body);
+}
 
 const startServer = () => {
   const port   = config.mustHealthcheckPort();

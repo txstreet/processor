@@ -3,7 +3,15 @@ set -euo pipefail
 
 port=${1-${HEALTHCHECK_PORT?"HEALTHCHECK_PORT undefined"}}
 
-result=`wget -q -O- http://localhost:${port}/healthcheck`
-echo result=$result
+http_code=`
+  curl \
+    --silent \
+    --show-error \
+    -o /dev/stderr \
+    -w "%{http_code}" \
+    http://localhost:${port}/healthcheck
+`
 
-[[ "$result" == "OK" ]]
+echo '{"http_code": '$http_code'}'
+
+[[ "$http_code" == 200 ]]

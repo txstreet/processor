@@ -11,7 +11,6 @@ for (const name in chainConfig) {
     blockchainImpls.push(name);
   }
 }
-console.log("Valid chains:", blockchainImpls);
 
 type envMap = {[key: string]: string};
 
@@ -202,5 +201,7 @@ const numberOrNull = (str: string): number | null => {
 };
 
 const config = new Config();
+console.log("Valid chains:", blockchainImpls);
+console.log("Enabled chains:", config.enabledChains());
 
 export default config;

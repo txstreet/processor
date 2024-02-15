@@ -24,6 +24,8 @@ RUN yarn build
 #
 FROM node-base
 
+RUN apk --update --no-cache add curl
+
 USER node
 
 WORKDIR /home/node/app
