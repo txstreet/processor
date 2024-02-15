@@ -8,6 +8,7 @@ import processBlockTxs from '../methods/block-processor/process-block-txs';
 import * as Wrappers from '../lib/node-wrappers';
 import { initHooks } from '../lib/chain-implementations';
 import config from '../lib/utilities/config';
+import { startServer as startHealthcheckServer } from '../lib/healthcheck';
 
 const nodesToInit = config.mustEnabledChains();
 console.log({nodesToInit});
@@ -84,4 +85,5 @@ const run = async () => {
     }
 }
 
+startHealthcheckServer();
 run(); 

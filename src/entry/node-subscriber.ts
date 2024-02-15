@@ -10,6 +10,7 @@ import * as Hooks from '../lib/chain-implementations';
 import redis from '../databases/redis';
 import config from '../lib/utilities/config';
 import { BlockchainWrapper } from '../lib/node-wrappers';
+import { startServer as startHealthcheckServer } from '../lib/healthcheck';
 
 // The chain implementations to be processed.
 var chainsToSubscribe: string[] = config.mustEnabledChains();
@@ -202,6 +203,7 @@ const init = async () => {
     }
 }
 
+startHealthcheckServer();
 init();
 
 export const housingImplementations: any = {};

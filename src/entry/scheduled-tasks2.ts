@@ -9,6 +9,7 @@ import { BTCBlocksSchema, BTCTransactionsSchema, ETHBlocksSchema, XMRBlocksSchem
 import ObtainBlocksFromDatabase from '../lib/tasks2/tasks/ObtainBlocksFromDatabase';
 import ObtainRollupBlocksFromDatabase from '../lib/tasks2/tasks/ObtainRollupBlocksFromDatabase';
 import config from '../lib/utilities/config';
+import { startServer as startHealthcheckServer } from '../lib/healthcheck';
 
 const chainToInit: string = config.mustEnabledChain();
 
@@ -75,5 +76,5 @@ const initialize = async () => {
     }
 }
 
-// Initialize the script. 
+startHealthcheckServer();
 initialize();

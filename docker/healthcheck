@@ -1,6 +1,9 @@
 #!/bin/sh
-set -eo pipefail
+set -euo pipefail
 
-cd /home/node/app
+port=${1-${HEALTHCHECK_PORT?"HEALTHCHECK_PORT undefined"}}
 
-exec node ./dist/entry/healthcheck.js
+result=`wget -q -O- http://localhost:${port}/healthcheck`
+echo result=$result
+
+[[ "$result" == "OK" ]]

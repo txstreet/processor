@@ -1,9 +1,6 @@
 #!/bin/sh
-set -eo pipefail
+set -euo pipefail
 
-result=`wget -q -O- http://localhost:${WEBSOCKET_PORT}/healthcheck`
-echo result=$result
+port=${WEBSOCKET_PORT?"API_PORT not specified"}
 
-[[ "$result" == "OK" ]]
-
-exec /docker-healthcheck
+exec /docker-healthcheck $port

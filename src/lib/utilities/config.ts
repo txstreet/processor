@@ -12,6 +12,8 @@ for (const name in chainConfig) {
 }
 console.log("Valid chains:", blockchainImpls);
 
+type envMap = {[key: string]: string};
+
 class Config {
   public mongodbUri:      string;
   public mongodbDatabase: string;
@@ -20,15 +22,19 @@ class Config {
   public dataDir:         string;
   public envChains:       string[];
 
-  private ethNodeUrl:     string;
-  private ethBesuNodeUrl: string | null;
+  private ethNodeUrl:      string;
+  private ethBesuNodeUrl:  string | null;
+  private healthcheckPort: number | null;
 
-  constructor(env = process.env) {
+  constructor(env: envMap = process.env) {
+    this.assignPublicVariables(env);
+    this.assignPrivateVariables(env);
+  }
+
+  private assignPublicVariables(env: envMap): void {
     this.mongodbUri      = env.MONGODB_URI;
     this.mongodbDatabase = env.MONGODB_DATABASE;
     this.redisUri        = env.REDIS_URI;
-    this.ethNodeUrl      = env.ETH_NODE;
-    this.ethBesuNodeUrl  = env.ETH_BESU_NODE;
     this.ethBulkUrl      = env.ETH_BULK_URL;
     this.dataDir         = env.DATA_DIR;
     this.envChains       = filterValidChains(chainsFromEnv(env.CHAINS || ""));
@@ -45,16 +51,6 @@ class Config {
       throw new Error("Invalid $REDIS_URI");
     }
 
-    if (this.ethBesuNodeUrl) {
-      if (!/^wss?:/i.test(this.ethBesuNodeUrl)) {
-        throw new Error("Invalid $ETH_BESU_NODE");
-      }
-    } else {
-      if (!/^wss?:/i.test(this.ethNodeUrl)) {
-        throw new Error("Invalid $ETH_NODE");
-      }
-    }
-
     if (!/^https?:/i.test(this.ethBulkUrl)) {
       throw new Error("Invalid $ETH_BULK_URL");
     }
@@ -65,6 +61,26 @@ class Config {
 
     if (!isDirectory(this.dataDir)) {
       throw new Error("Not a directory: $DATA_DIR");
+    }
+  }
+
+  private assignPrivateVariables(env: envMap): void {
+    this.ethNodeUrl      = env.ETH_NODE;
+    this.ethBesuNodeUrl  = env.ETH_BESU_NODE;
+    this.healthcheckPort = numberOrNull(env.HEALTHCHECK_PORT);
+
+    if (this.ethBesuNodeUrl) {
+      if (!/^wss?:/i.test(this.ethBesuNodeUrl)) {
+        throw new Error("Invalid $ETH_BESU_NODE");
+      }
+    } else {
+      if (!/^wss?:/i.test(this.ethNodeUrl)) {
+        throw new Error("Invalid $ETH_NODE");
+      }
+    }
+
+    if (this.healthcheckPort && !isPort(this.healthcheckPort)) {
+      throw new Error("Invalid port in $HEALTHCHECK_PORT");
     }
   }
 
@@ -104,6 +120,14 @@ class Config {
 
     return chains[0];
   }
+
+  public mustHealthcheckPort(): number {
+    if (!this.healthcheckPort) {
+      throw new Error("Unspecified healthcheck port");
+    }
+
+    return this.healthcheckPort;
+  }
 }
 
 const chainsFromEnv = (value: string): string[] => {
@@ -119,9 +143,12 @@ const chainsFromArgs = (): string[] => {
 };
 
 const chainArgs = (): string[] => {
+
+
   const args = minimist(process.argv.slice(2));
   let chains: string[] = [];
 
+  // Handle `["--chain", "ETH"]`
   if (args.chain) {
     if (typeof args.chain === "string") {
       chains = [args.chain];
@@ -130,6 +157,14 @@ const chainArgs = (): string[] => {
     }
   }
 
+  // Handle `["--ETH"]`
+  for (const name of blockchainImpls) {
+    if (args[name] === true) {
+      chains.push(name);
+    }
+  }
+
+  // Handle `["ETH"]`
   return [ ...chains, ...args._ ];
 };
 
@@ -150,6 +185,19 @@ const isDirectory = (path: string) => {
   const stats = fs.statSync(path, {throwIfNoEntry: false});
 
   return stats?.isDirectory;
+};
+
+const isPort = (port: number): boolean => {
+  return (port >= 1 && port <= 65535);
+};
+
+const numberOrNull = (str: string): number | null => {
+  if (!/^\d/.test(str)) return null;
+
+  const num = Number(str);
+  if (isNaN(num)) return null;
+
+  return num;
 };
 
 const config = new Config();

@@ -1,4 +1,5 @@
 import config from '../lib/utilities/config';
+import { startServer as startHealthcheckServer } from '../lib/healthcheck';
 
 import dotenv from 'dotenv';
 dotenv.config({ path: __dirname + '/../../.env' });
@@ -85,6 +86,8 @@ const run = async () => {
 
 (async () => {
     if(!isCron) {
+        startHealthcheckServer();
+
         const execute = async () => {
             try { 
                 await run();

@@ -7,6 +7,7 @@ import * as Wrappers from '../lib/node-wrappers';
 import processPendingTransactions from '../methods/tx-processor/process-pending-transactions'; 
 import processConfirmedTransactions from '../methods/tx-processor/process-confirmed-transactions';
 import config from '../lib/utilities/config';
+import { startServer as startHealthcheckServer } from '../lib/healthcheck';
 
 // A collection of all initialized BlockchainNode instances. 
 const nodes: { [key: string]: Wrappers.BlockchainWrapper } = {}; 
@@ -97,4 +98,5 @@ const run = async () => {
     }
 }
 
+startHealthcheckServer();
 run(); 

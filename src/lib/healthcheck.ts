@@ -3,6 +3,7 @@ import axios from 'axios';
 import mongodb from '../databases/mongodb';
 import { clients as redisClients } from '../databases/redisEvents';
 import { RedisClient } from 'redis';
+import Express, { Request, Response } from 'express';
 import minimist from 'minimist';
 
 type checkFn = () => Promise<void>;
@@ -172,11 +173,28 @@ const checkFail = async (): Promise<void> => {
   throw new Error(`Dummy failure`);
 }
 
-const handleRequest = async (request: any, response: any) => {
-  response.status(200).send('OK'); 
+const handleHealthcheck = async (request: Request, response: Response) => {
+  const ok = await checkAll();
+
+  if (ok) {
+    response.status(200).send("OK\n"); 
+  } else {
+    response.status(503).send("Unhealthy\n"); 
+  }
 };
 
+const startServer = () => {
+  const port   = config.mustHealthcheckPort();
+  const app    = Express();
+
+  app.get('/healthcheck', handleHealthcheck);
+
+  app.listen(port, (): any => {
+    console.log(`Healthcheck server listening on port: ${port}`);
+  });
+}
+
 export {
-  handleRequest,
-  checkAll,
+  handleHealthcheck,
+  startServer,
 }

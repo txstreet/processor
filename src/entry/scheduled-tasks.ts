@@ -13,6 +13,8 @@ import xmrBlockBroadcast from '../lib/tasks/jobs/xmr-block-broadcast';
 import ethRecentContracts from '../lib/tasks/jobs/eth-recent-contracts';
 import config from '../lib/utilities/config';
 import { chainConfig } from '../data/chains';
+import { startServer as startHealthcheckServer } from '../lib/healthcheck';
+
 var allowed = Object.keys(chainConfig);
 var chains: string[] = config.mustEnabledChains();
 
@@ -125,4 +127,5 @@ const run = async () => {
     }
 }
 
+startHealthcheckServer();
 run();

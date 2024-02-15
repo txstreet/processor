@@ -10,7 +10,7 @@ import mongodb from '../databases/mongodb';
 import { lastBlocks  } from '../lib/websocket/redis/handlers/block';
 import { lastHouseTxs  } from '../lib/websocket/redis/handlers/pendingTx';
 import { formatTransaction } from '../lib/utilities';
-import { handleRequest as handleHealthckeck } from '../lib/healthcheck';
+import { handleHealthcheck } from '../lib/healthcheck';
 
 const app = Express(); 
 const server = http.createServer(app); 
@@ -125,13 +125,13 @@ const start = async () => {
         });
     });
 
-    app.get('/healthcheck', handleHealthckeck);
+    app.get('/healthcheck', handleHealthcheck);
 
     console.log('Start listening');
 
     const port = process.env.WEBSOCKET_PORT || 8081;
     server.listen(port, (): any => {
-        return console.log(`Server listening on port: ${port}`);
+        console.log(`Server listening on port: ${port}`);
     });
 }
 
