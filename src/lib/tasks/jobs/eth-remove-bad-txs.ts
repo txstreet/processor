@@ -64,9 +64,9 @@ const getQueryForExecutionType = (chain: string, executionType: ExecutionType): 
 }
 
 export default async (chain: string): Promise<void> => {
-    try {
-        const node = config.initEthWrapper();
+    const node = config.initEthWrapper();
 
+    try {
         const { database } = await mongodb();
         const collection = database.collection('transactions_' + chain || ''); 
 
@@ -165,9 +165,10 @@ export default async (chain: string): Promise<void> => {
             if(blockInstructions.length)
                 await database.collection(`blocks`).bulkWrite(blockInstructions); 
         }
-
     } catch (error) {
         console.error(error);
+    } finally {
+        await node.stop();
     }
 }
 

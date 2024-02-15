@@ -57,7 +57,11 @@ const chainsChecks = (): checksMap => {
 const checkEthNode = async (): Promise<void> => {
   const wrapper = config.initEthWrapper();
 
-  await wrapper.mempoolSize();
+  try {
+    await wrapper.getCurrentHeight();
+  } finally {
+    await wrapper.stop();
+  }
 };
 
 const checkAll = async (): Promise<CheckResultAggregate> => {
