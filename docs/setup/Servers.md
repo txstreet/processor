@@ -43,7 +43,8 @@ WEBSOCKET_PORT=8081
 - `cd /etc/nginx/sites-enabled`
 - `nano api.yourdomain.com` (replace yourdomain.com with your domain)
 - Paste the following and save:
-```server {
+```
+server {
    listen 443 ssl;
    listen [::]:443 ssl;
    #include snippets/self-signed.conf;
